@@ -1,28 +1,32 @@
 <form [formGroup]="resumeForm" (ngSubmit)="submitForm()">
-  <div class="flex">
-    <h2>Personal Details</h2>
-    <div class="personalDetails" formGroupName="personalDetails">
-      <label>Name: <input type="text" formControlName="name" /></label>
-      <label>Email: <input type="email" formControlName="email" /></label>
-      <label>Phone: <input type="text" formControlName="phone" /></label>
-    </div>
-
-    <h2>Address</h2>
-    <div formGroupName="address">
-      <label
-        >House Number: <input type="text" formControlName="houseNumber"
-      /></label>
-      <label>Floor: <input type="text" formControlName="floor" /></label>
-      <label>Street: <input type="text" formControlName="street" /></label>
-      <label>City: <input type="text" formControlName="city" /></label>
-      <label>Landmark: <input type="text" formControlName="landmark" /></label>
-      <label>State: <input type="text" formControlName="state" /></label>
-      <label>Country: <input type="text" formControlName="country" /></label>
-    </div>
+  <!-- <div class="flex"> -->
+  <h2 class="heading-border-bottom">Personal Details</h2>
+  <div class="grid-column" formGroupName="personalDetails">
+    <label>Name: <input type="text" formControlName="name" /></label>
+    <label>Email: <input type="email" formControlName="email" /></label>
+    <label>Phone: <input type="text" formControlName="phone" /></label>
   </div>
-  <h2>Education</h2>
+
+  <h2 class="heading-border-bottom">Address</h2>
+  <div class="grid-column" formGroupName="address">
+    <label
+      >House Number: <input type="text" formControlName="houseNumber"
+    /></label>
+    <label>Floor: <input type="text" formControlName="floor" /></label>
+    <label>Street: <input type="text" formControlName="street" /></label>
+    <label>City: <input type="text" formControlName="city" /></label>
+    <label>Landmark: <input type="text" formControlName="landmark" /></label>
+    <label>State: <input type="text" formControlName="state" /></label>
+    <label>Country: <input type="text" formControlName="country" /></label>
+  </div>
+  <!-- </div> -->
+  <div class="flex space-btw heading-border-bottom">
+    <h2>Education</h2>
+    <button type="button" (click)="addEducation()">+ Add Education</button>
+  </div>
   <div formArrayName="education">
     <div
+      class="section-border"
       *ngFor="let edu of educationArray.controls; let i = index"
       [formGroupName]="i"
     >
@@ -42,10 +46,11 @@
         Remove
       </button>
     </div>
-    <button type="button" (click)="addEducation()">+ Add Education</button>
   </div>
-
-  <h2>Experience</h2>
+  <div class="flex space-btw heading-border-bottom">
+    <h2>Experience</h2>
+    <button type="button" (click)="addExperience()">+ Add Experience</button>
+  </div>
   <div formArrayName="experience">
     <div
       *ngFor="let exp of experienceArray.controls; let i = index"
@@ -61,12 +66,14 @@
       </label>
       <button type="button" (click)="removeExperience(i)">Remove</button>
     </div>
-    <button type="button" (click)="addExperience()">+ Add Experience</button>
   </div>
-
-  <h2>Skills</h2>
+  <div class="flex space-btw heading-border-bottom">
+    <h2>Skills</h2>
+    <button type="button" (click)="addSkill()">+ Add Skill</button>
+  </div>
   <div formArrayName="skills">
     <div
+      class="section-border"
       *ngFor="let skill of skillsArray.controls; let i = index"
       [formGroupName]="i"
     >
@@ -82,12 +89,14 @@
         Remove
       </button>
     </div>
-    <button type="button" (click)="addSkill()">+ Add Skill</button>
   </div>
-
-  <h2>Projects</h2>
+  <div class="flex space-btw heading-border-bottom">
+    <h2>Projects</h2>
+    <button type="button" (click)="addProject()">+ Add Project</button>
+  </div>
   <div formArrayName="projects">
     <div
+      class="section-border"
       *ngFor="let project of projectsArray.controls; let i = index"
       [formGroupName]="i"
     >
@@ -97,23 +106,30 @@
       <label
         >Description: <textarea formControlName="description"></textarea>
       </label>
-
-      <h4>Tech Stack:</h4>
-      <div formArrayName="techStack">
-        <div *ngFor="let tech of getTechStackArray(i).controls; let j = index">
-          <input type="text" [formControlName]="j" />
-          <button type="button" (click)="removeTechStack(i, j)">Remove</button>
-        </div>
+      <div class="flex space-btw section-border">
+        <h4>Tech Stack:</h4>
         <button type="button" (click)="addTechStack(i)">
           + Add Tech Stack
         </button>
       </div>
+      <div formArrayName="techStack">
+        <div
+          class="flex"
+          *ngFor="let tech of getTechStackArray(i).controls; let j = index"
+        >
+          <input type="text" [formControlName]="j" />
+          <button type="button" (click)="removeTechStack(i, j)">Remove</button>
+        </div>
+      </div>
 
       <label>Your Role: <input type="text" formControlName="role" /></label>
-
+      <div class="flex space-btw section-border">
       <h4>Additional Info:</h4>
+      <button type="button" (click)="addAdditionalInfo(i)">+ Add Info</button>
+    </div>
       <div formArrayName="additionalInfo">
         <div
+          class="flex"
           *ngFor="let info of getAdditionalInfoArray(i).controls; let j = index"
           [formGroupName]="j"
         >
@@ -123,7 +139,7 @@
             Remove
           </button>
         </div>
-        <button type="button" (click)="addAdditionalInfo(i)">+ Add Info</button>
+        
       </div>
 
       <button
@@ -134,7 +150,6 @@
         Remove Project
       </button>
     </div>
-    <button type="button" (click)="addProject()">+ Add Project</button>
   </div>
 
   <button type="submit">Submit Resume</button>

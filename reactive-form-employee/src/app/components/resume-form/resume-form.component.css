@@ -27,15 +27,16 @@ form {
 h2,
 h4 {
   color: #333;
-  border-bottom: 2px solid #007bff;
+  
   padding-bottom: 5px;
+  margin: 20px 0px;
 }
 
 label {
   display: block;
   font-weight: bold;
   margin-top: 10px;
-  flex: 1 0 0;
+  flex: 1 0 1;
 }
 
 input,
@@ -114,12 +115,30 @@ button[type="button"]:hover {
   margin-right: 10px;
 }
 
-.personalDetails {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  max-width: 100%;
-  width: 100%;
-  justify-content: space-between;
-  padding: 20px auto;
+.grid-column {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 50px;
+  row-gap: 20px;
 }
+
+.section-border {
+  border-bottom: 2px solid lightgray;
+  padding-bottom: 20px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.space-btw {
+  justify-content: space-between;
+}
+
+.heading-border-bottom{
+  border-bottom: 2px solid #007bff;
+}
+
+
