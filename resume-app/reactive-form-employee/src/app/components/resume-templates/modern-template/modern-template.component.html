@@ -1,0 +1,87 @@
+<div class="modern-resume">
+  <!-- Header Section -->
+  <header class="header">
+    <div class="name-title">
+      <h1>{{resumeData?.personalDetails?.name}}</h1>
+    </div>
+    <div class="contact-info">
+      <p><i class="fas fa-envelope"></i> {{resumeData?.personalDetails?.email}}</p>
+      <p><i class="fas fa-phone"></i> {{resumeData?.personalDetails?.phone}}</p>
+      <p><i class="fas fa-map-marker-alt"></i> 
+        {{resumeData?.address?.city}}, {{resumeData?.address?.state}}, {{resumeData?.address?.country}}
+      </p>
+    </div>
+    <!-- Social Links -->
+    <div class="social-links">
+      <ng-container *ngFor="let link of resumeData?.personalDetails?.socialLinks">
+        <a [href]="link.url" target="_blank" class="social-link">
+          <i class="fas fa-link"></i> {{link.platform}}
+        </a>
+      </ng-container>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Experience Section -->
+    <section class="section">
+      <h2>Professional Experience</h2>
+      <div class="experience-list">
+        <div *ngFor="let exp of resumeData?.experience" class="experience-item">
+          <div class="experience-header">
+            <h3>{{exp.jobTitle}}</h3>
+            <span class="company">{{exp.company}}</span>
+            <span class="duration">{{exp.yearsWorked}}</span>
+          </div>
+          <p class="description">{{exp.description}}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education Section -->
+    <section class="section">
+      <h2>Education</h2>
+      <div class="education-list">
+        <div *ngFor="let edu of resumeData?.education" class="education-item">
+          <h3>{{edu.degree}}</h3>
+          <div class="education-details">
+            <span class="institution">{{edu.institution}}</span>
+            <span class="year">{{edu.year}}</span>
+          </div>
+          <p class="description">{{edu.description}}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="section">
+      <h2>Skills</h2>
+      <div class="skills-list">
+        <div *ngFor="let skill of resumeData?.skills" class="skill-item">
+          <h3>{{skill.skillName}}</h3>
+          <p>{{skill.description}}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="section">
+      <h2>Projects</h2>
+      <div class="projects-list">
+        <div *ngFor="let project of resumeData?.projects" class="project-item">
+          <h3>{{project.projectName}}</h3>
+          <div class="project-role">{{project.role}}</div>
+          <p class="description">{{project.description}}</p>
+          <div class="tech-stack">
+            <span *ngFor="let tech of project.techStack" class="tech-item">{{tech}}</span>
+          </div>
+          <div class="additional-info">
+            <div *ngFor="let info of project.additionalInfo" class="info-item">
+              <strong>{{info.key}}:</strong> {{info.value}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

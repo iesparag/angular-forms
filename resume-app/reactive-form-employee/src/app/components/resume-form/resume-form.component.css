@@ -31,6 +31,37 @@ h4 {
   padding-bottom: 5px;
   margin: 20px 0px;
 }
+/* Social Links Styles */
+.social-link-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.platform-field {
+  flex: 0 0 30%;
+}
+
+.url-field {
+  flex: 1;
+}
+
+.remove-btn {
+  padding: 5px 10px;
+  font-size: 18px;
+  line-height: 1;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  height: auto;
+}
+
+.remove-btn:hover {
+  background-color: #cc0000;
+}
 
 label {
   display: block;
@@ -47,6 +78,7 @@ textarea {
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
+  height: 50px;
 }
 
 textarea {

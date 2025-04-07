@@ -1,10 +1,37 @@
 <form [formGroup]="resumeForm" (ngSubmit)="submitForm()">
-  <!-- <div class="flex"> -->
   <h2 class="heading-border-bottom">Personal Details</h2>
-  <div class="grid-column" formGroupName="personalDetails">
-    <label>Name: <input type="text" formControlName="name" /></label>
-    <label>Email: <input type="email" formControlName="email" /></label>
-    <label>Phone: <input type="text" formControlName="phone" /></label>
+  <div  formGroupName="personalDetails">
+    <div class="grid-column">
+      <label>Name: <input type="text" formControlName="name" /></label>
+      <label>Email: <input type="email" formControlName="email" /></label>
+      <label>Phone: <input type="text" formControlName="phone" /></label>
+    </div>
+
+    <!-- Social Links Section -->
+    <div class="social-links-section">
+      <div class="flex space-btw">
+        <h3>Social Links</h3>
+        <button type="button" (click)="addSocialLink()">+ Add Social Link</button>
+      </div>
+      
+      <div formArrayName="socialLinks">
+        <div *ngFor="let link of socialLinksArray.controls; let i = index" 
+             [formGroupName]="i" 
+             class="social-link-item">
+          <div class="social-link-content">
+            <label class="platform-field">
+              Platform:
+              <input type="text" formControlName="platform" placeholder="e.g. GitHub, LinkedIn" />
+            </label>
+            <label class="url-field">
+              URL:
+              <input type="url" formControlName="url" placeholder="https://..." />
+            </label>
+            <button type="button" (click)="removeSocialLink(i)" class="remove-btn">×</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <h2 class="heading-border-bottom">Address</h2>
