@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ModernTemplateComponent } from '../resume-templates/modern-template/modern-template.component';
 import { MinimalTemplateComponent } from '../resume-templates/minimal-template/minimal-template.component';
@@ -11,6 +11,7 @@ import { ProfessionalTemplateComponent } from '../resume-templates/professional-
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     ModernTemplateComponent,
     MinimalTemplateComponent,
     CreativeTemplateComponent,
@@ -26,20 +27,16 @@ export class TemplatePreviewComponent implements OnInit {
   constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
-    // Get template type from route parameter
     this.route.paramMap.subscribe(params => {
       const type = params.get('type');
       if (type && ['modern', 'minimal', 'creative', 'professional'].includes(type)) {
         this.templateType = type;
       }
     });
-
-    // Create sample resume data
     this.sampleResumeData = this.createSampleData();
   }
 
   editResume() {
-    // Store the selected template type and navigate to the form
     localStorage.setItem('selectedTemplate', this.templateType);
     this.router.navigate(['/resume-form']);
   }

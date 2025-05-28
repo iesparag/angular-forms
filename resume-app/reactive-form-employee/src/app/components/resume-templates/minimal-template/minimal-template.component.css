@@ -1,37 +1,41 @@
 .minimal-resume {
   max-width: 800px;
   margin: 0 auto;
-  padding: 40px;
-  font-family: 'Inter', sans-serif;
-  line-height: 1.6;
-  color: #2c3e50;
+  padding: 30px;
+  font-family: Arial, Helvetica, sans-serif; /* ATS-friendly font */
+  font-size: 11pt; /* Standard resume font size */
+  line-height: 1.5; /* Improved readability */
+  color: #000; /* High contrast for better readability */
 }
 
 /* Header */
 .header {
-  text-align: center;
-  margin-bottom: 40px;
+  text-align: left; /* Left-aligned text is more ATS-friendly */
+  margin-bottom: 20px;
+  border-bottom: 1px solid #000;
+  padding-bottom: 10px;
 }
 
 .header h1 {
-  font-size: 2.2em;
-  font-weight: 700;
-  margin: 0;
-  color: #2c3e50;
+  font-size: 18pt; /* Standard size for resume headers */
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  color: #000; /* Black text for better ATS parsing */
+  text-transform: uppercase; /* Makes the name stand out */
 }
 
 .contact-bar, .social-bar {
-  margin: 10px 0;
-  color: #7f8c8d;
+  margin: 8px 0;
+  color: #000;
 }
 
 .separator {
-  margin: 0 10px;
-  color: #bdc3c7;
+  margin: 0 8px;
+  color: #000;
 }
 
 .social-bar a {
-  color: #3498db;
+  color: #000;
   text-decoration: none;
 }
 
@@ -41,17 +45,19 @@
 
 /* Sections */
 section {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  page-break-inside: avoid; /* Keeps sections together when printing */
 }
 
 h2 {
-  font-size: 1.3em;
+  font-size: 14pt;
+  font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  color: #2c3e50;
-  border-bottom: 2px solid #ecf0f1;
+  letter-spacing: 1px;
+  color: #000;
+  border-bottom: 1px solid #000;
   padding-bottom: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 /* Experience & Education Items */
@@ -63,73 +69,77 @@ h2 {
 }
 
 h3 {
-  font-size: 1.1em;
+  font-size: 12pt;
+  font-weight: bold;
   margin: 0;
-  color: #2c3e50;
+  color: #000;
 }
 
 .company, .institution {
-  color: #7f8c8d;
-  font-style: italic;
+  color: #000;
+  font-weight: bold;
 }
 
 .duration, .year {
-  color: #95a5a6;
-  font-size: 0.9em;
+  color: #000;
+  font-size: 11pt;
 }
 
 /* Skills */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 15px;
+  gap: 12px;
 }
 
 .skill-item {
   display: flex;
   flex-direction: column;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
 }
 
 .skill-name {
-  font-weight: 600;
-  color: #2c3e50;
+  font-weight: bold;
+  color: #000;
+  font-size: 11pt;
 }
 
 .skill-desc {
-  font-size: 0.9em;
-  color: #7f8c8d;
+  font-size: 11pt;
+  color: #000;
 }
 
 /* Projects */
 .project-item {
-  margin-bottom: 25px;
+  margin-bottom: 15px;
+  page-break-inside: avoid; /* Keeps items together when printing */
 }
 
 .role {
   display: block;
-  color: #7f8c8d;
-  font-style: italic;
+  color: #000;
+  font-weight: bold;
   margin: 5px 0;
 }
 
 .tech-list {
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .tech {
   display: inline-block;
-  background: #ecf0f1;
-  padding: 2px 8px;
-  margin: 2px;
-  border-radius: 3px;
-  font-size: 0.9em;
-  color: #2c3e50;
+  background: transparent;
+  padding: 0;
+  margin-right: 10px;
+  font-size: 11pt;
+  color: #000;
 }
 
 .project-info {
-  font-size: 0.9em;
-  margin: 5px 0;
-  color: #7f8c8d;
+  font-size: 11pt;
+  margin: 3px 0;
+  color: #000;
 }
 
 /* Print Styles */

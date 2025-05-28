@@ -1,0 +1,524 @@
+<div class="resume-editor-container">
+  <!-- Header with template selection -->
+  <header class="editor-header">
+    <div class="template-info">
+      <h1>{{ templateType | titlecase }} Resume</h1>
+    </div>
+    <div class="template-actions">
+      <div class="template-selector">
+        <label>Template Style:</label>
+        <div class="template-buttons">
+          <button 
+            [class.active]="templateType === 'modern'" 
+            (click)="changeTemplate('modern')">Modern</button>
+          <button 
+            [class.active]="templateType === 'minimal'" 
+            (click)="changeTemplate('minimal')">Minimal</button>
+          <button 
+            [class.active]="templateType === 'creative'" 
+            (click)="changeTemplate('creative')">Creative</button>
+          <button 
+            [class.active]="templateType === 'professional'" 
+            (click)="changeTemplate('professional')">Professional</button>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button class="save-button" (click)="submitForm()">Save Resume</button>
+        <button class="pdf-button" (click)="saveAsPdf()">Download PDF</button>
+        <button class="back-button" routerLink="/">Back to Templates</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content with split view -->
+  <div class="split-view">
+    <!-- Left side: Resume preview -->
+    <div class="preview-pane">
+      <div class="preview-container" #previewContainer>
+        <!-- Modern Template -->
+        <app-modern-template 
+          *ngIf="templateType === 'modern'" 
+          [resumeData]="resumeData">
+        </app-modern-template>
+        
+        <!-- Minimal Template -->
+        <app-minimal-template 
+          *ngIf="templateType === 'minimal'" 
+          [resumeData]="resumeData">
+        </app-minimal-template>
+        
+        <!-- Creative Template -->
+        <app-creative-template 
+          *ngIf="templateType === 'creative'" 
+          [resumeData]="resumeData">
+        </app-creative-template>
+        
+        <!-- Professional Template -->
+        <app-professional-template 
+          *ngIf="templateType === 'professional'" 
+          [resumeData]="resumeData">
+        </app-professional-template>
+      </div>
+    </div>
+
+    <!-- Right side: Form editor -->
+    <div class="editor-pane">
+      <div class="section-tabs">
+        <button 
+          *ngFor="let section of sections" 
+          [class.active]="activeSection === section.id"
+          (click)="setActiveSection(section.id)">
+          {{ section.name }}
+        </button>
+      </div>
+
+      <div class="form-container">
+        <form [formGroup]="resumeForm" (ngSubmit)="submitForm()">
+          <!-- Professional Summary Section -->
+          <div *ngIf="activeSection === 'professionalSummary'" class="form-section">
+            <div class="section-header">
+              <h2>Professional Summary</h2>
+              <div class="visibility-toggle">
+                <label>
+                  <input type="checkbox" [checked]="sectionVisibility['professionalSummary']" (change)="toggleSectionVisibility('professionalSummary')">
+                  {{sectionVisibility['professionalSummary'] ? 'Visible' : 'Hidden'}}
+                </label>
+              </div>
+            </div>
+            <div class="form-field">
+              <label>Summary:</label>
+              <textarea 
+                formControlName="professionalSummary" 
+                placeholder="Write a brief summary of your professional background, skills, and career goals..."
+                (input)="updateResumeData()"
+                rows="6"></textarea>
+            </div>
+          </div>
+
+          <!-- Personal Details Section -->
+          <div *ngIf="activeSection === 'personalDetails'" class="form-section" formGroupName="personalDetails">
+            <div class="section-header">
+              <h2>Personal Details</h2>
+            </div>
+            <div class="form-field">
+              <label>Full Name:</label>
+              <input 
+                type="text" 
+                formControlName="name" 
+                placeholder="Your full name"
+                (input)="updateResumeData()" />
+            </div>
+            <div class="form-field">
+              <label>Email:</label>
+              <input 
+                type="email" 
+                formControlName="email" 
+                placeholder="Your email address"
+                (input)="updateResumeData()" />
+            </div>
+            <div class="form-field">
+              <label>Phone:</label>
+              <input 
+                type="text" 
+                formControlName="phone" 
+                placeholder="Your phone number"
+                (input)="updateResumeData()" />
+            </div>
+
+            <!-- Social Links -->
+            <div class="social-links-section">
+              <div class="section-header">
+                <h3>Social Links</h3>
+                <button type="button" (click)="addSocialLink()">+ Add Social Link</button>
+              </div>
+              
+              <div formArrayName="socialLinks">
+                <div 
+                  *ngFor="let link of socialLinksArray.controls; let i = index" 
+                  [formGroupName]="i" 
+                  class="social-link-item">
+                  <div class="social-link-content">
+                    <div class="form-field">
+                      <label>Platform:</label>
+                      <input 
+                        type="text" 
+                        formControlName="platform" 
+                        placeholder="e.g. GitHub, LinkedIn"
+                        (input)="updateResumeData()" />
+                    </div>
+                    <div class="form-field">
+                      <label>URL:</label>
+                      <input 
+                        type="url" 
+                        formControlName="url" 
+                        placeholder="https://..."
+                        (input)="updateResumeData()" />
+                    </div>
+                    <button type="button" (click)="removeSocialLink(i)" class="remove-btn">×</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Section -->
+          <div *ngIf="activeSection === 'address'" class="form-section" formGroupName="address">
+            <div class="section-header">
+              <h2>Address</h2>
+            </div>
+            <div class="form-field">
+              <label>House Number:</label>
+              <input 
+                type="text" 
+                formControlName="houseNumber"
+                (input)="updateResumeData()" />
+            </div>
+            <div class="form-field">
+              <label>Floor:</label>
+              <input 
+                type="text" 
+                formControlName="floor"
+                (input)="updateResumeData()" />
+            </div>
+            <div class="form-field">
+              <label>Street:</label>
+              <input 
+                type="text" 
+                formControlName="street"
+                (input)="updateResumeData()" />
+            </div>
+            <div class="form-field">
+              <label>City:</label>
+              <input 
+                type="text" 
+                formControlName="city"
+                (input)="updateResumeData()" />
+            </div>
+            <div class="form-field">
+              <label>Landmark:</label>
+              <input 
+                type="text" 
+                formControlName="landmark"
+                (input)="updateResumeData()" />
+            </div>
+            <div class="form-field">
+              <label>State:</label>
+              <input 
+                type="text" 
+                formControlName="state"
+                (input)="updateResumeData()" />
+            </div>
+            <div class="form-field">
+              <label>Country:</label>
+              <input 
+                type="text" 
+                formControlName="country"
+                (input)="updateResumeData()" />
+            </div>
+          </div>
+
+          <!-- Education Section -->
+          <div *ngIf="activeSection === 'education'" class="form-section">
+            <div class="section-header">
+              <h2>Education</h2>
+              <div class="header-actions">
+                <div class="visibility-toggle">
+                  <label>
+                    <input type="checkbox" [checked]="sectionVisibility['education']" (change)="toggleSectionVisibility('education')">
+                    {{sectionVisibility['education'] ? 'Visible' : 'Hidden'}}
+                  </label>
+                </div>
+                <button type="button" (click)="addEducation()">+ Add Education</button>
+              </div>
+            </div>
+            
+            <div formArrayName="education">
+              <div 
+                *ngFor="let edu of educationArray.controls; let i = index" 
+                [formGroupName]="i" 
+                class="form-array-item">
+                <div class="form-array-header">
+                  <h3>Education #{{i+1}}</h3>
+                  <button 
+                    *ngIf="educationArray.length > 1" 
+                    type="button" 
+                    (click)="removeEducation(i)" 
+                    class="remove-btn">×</button>
+                </div>
+                
+                <div class="form-field">
+                  <label>Degree:</label>
+                  <input 
+                    type="text" 
+                    formControlName="degree"
+                    (input)="updateResumeData()" />
+                </div>
+                <div class="form-field">
+                  <label>Institution:</label>
+                  <input 
+                    type="text" 
+                    formControlName="institution"
+                    (input)="updateResumeData()" />
+                </div>
+                <div class="form-field">
+                  <label>Year:</label>
+                  <input 
+                    type="text" 
+                    formControlName="year"
+                    (input)="updateResumeData()" />
+                </div>
+                <div class="form-field">
+                  <label>Description:</label>
+                  <textarea 
+                    formControlName="description"
+                    (input)="updateResumeData()"
+                    rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Experience Section -->
+          <div *ngIf="activeSection === 'experience'" class="form-section">
+            <div class="section-header">
+              <h2>Experience</h2>
+              <div class="header-actions">
+                <div class="visibility-toggle">
+                  <label>
+                    <input type="checkbox" [checked]="sectionVisibility['experience']" (change)="toggleSectionVisibility('experience')">
+                    {{sectionVisibility['experience'] ? 'Visible' : 'Hidden'}}
+                  </label>
+                </div>
+                <button type="button" (click)="addExperience()">+ Add Experience</button>
+              </div>
+            </div>
+            
+            <div formArrayName="experience">
+              <div 
+                *ngFor="let exp of experienceArray.controls; let i = index" 
+                [formGroupName]="i" 
+                class="form-array-item">
+                <div class="form-array-header">
+                  <h3>Experience #{{i+1}}</h3>
+                  <button 
+                    *ngIf="experienceArray.length > 1" 
+                    type="button" 
+                    (click)="removeExperience(i)" 
+                    class="remove-btn">×</button>
+                </div>
+                
+                <div class="form-field">
+                  <label>Job Title:</label>
+                  <input 
+                    type="text" 
+                    formControlName="jobTitle"
+                    (input)="updateResumeData()" />
+                </div>
+                <div class="form-field">
+                  <label>Company:</label>
+                  <input 
+                    type="text" 
+                    formControlName="company"
+                    (input)="updateResumeData()" />
+                </div>
+                <div class="form-field">
+                  <label>Years Worked:</label>
+                  <input 
+                    type="text" 
+                    formControlName="yearsWorked"
+                    (input)="updateResumeData()" />
+                </div>
+                <div class="form-field">
+                  <label>Description:</label>
+                  <textarea 
+                    formControlName="description"
+                    (input)="updateResumeData()"
+                    rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills Section -->
+          <div *ngIf="activeSection === 'skills'" class="form-section">
+            <div class="section-header">
+              <h2>Skills</h2>
+              <div class="header-actions">
+                <div class="visibility-toggle">
+                  <label>
+                    <input type="checkbox" [checked]="sectionVisibility['skills']" (change)="toggleSectionVisibility('skills')">
+                    {{sectionVisibility['skills'] ? 'Visible' : 'Hidden'}}
+                  </label>
+                </div>
+                <button type="button" (click)="addSkill()">+ Add Skill</button>
+              </div>
+            </div>
+            
+            <div formArrayName="skills">
+              <div 
+                *ngFor="let skill of skillsArray.controls; let i = index" 
+                [formGroupName]="i" 
+                class="form-array-item">
+                <div class="form-array-header">
+                  <h3>Skill #{{i+1}}</h3>
+                  <button 
+                    *ngIf="skillsArray.length > 1" 
+                    type="button" 
+                    (click)="removeSkill(i)" 
+                    class="remove-btn">×</button>
+                </div>
+                
+                <div class="form-field">
+                  <label>Skill Name:</label>
+                  <input 
+                    type="text" 
+                    formControlName="skillName"
+                    (input)="updateResumeData()" />
+                </div>
+                <div class="form-field">
+                  <label>Skill Level (1-10): {{ skillsArray.at(i).get('skillLevel')?.value }}</label>
+                  <div class="range-slider-container">
+                    <input 
+                      type="range" 
+                      min="1" 
+                      max="10" 
+                      formControlName="skillLevel"
+                      (input)="updateResumeData()" 
+                      class="range-slider" />
+                    <div class="range-marks">
+                      <span>1</span>
+                      <span>2</span>
+                      <span>3</span>
+                      <span>4</span>
+                      <span>5</span>
+                      <span>6</span>
+                      <span>7</span>
+                      <span>8</span>
+                      <span>9</span>
+                      <span>10</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label>Description:</label>
+                  <textarea 
+                    formControlName="description"
+                    (input)="updateResumeData()"
+                    rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projects Section -->
+          <div *ngIf="activeSection === 'projects'" class="form-section">
+            <div class="section-header">
+              <h2>Projects</h2>
+              <div class="header-actions">
+                <div class="visibility-toggle">
+                  <label>
+                    <input type="checkbox" [checked]="sectionVisibility['projects']" (change)="toggleSectionVisibility('projects')">
+                    {{sectionVisibility['projects'] ? 'Visible' : 'Hidden'}}
+                  </label>
+                </div>
+                <button type="button" (click)="addProject()">+ Add Project</button>
+              </div>
+            </div>
+            
+            <div formArrayName="projects">
+              <div 
+                *ngFor="let project of projectsArray.controls; let i = index" 
+                [formGroupName]="i" 
+                class="form-array-item">
+                <div class="form-array-header">
+                  <h3>Project #{{i+1}}</h3>
+                  <button 
+                    *ngIf="projectsArray.length > 1" 
+                    type="button" 
+                    (click)="removeProject(i)" 
+                    class="remove-btn">×</button>
+                </div>
+                
+                <div class="form-field">
+                  <label>Project Name:</label>
+                  <input 
+                    type="text" 
+                    formControlName="projectName"
+                    (input)="updateResumeData()" />
+                </div>
+                <div class="form-field">
+                  <label>Description:</label>
+                  <textarea 
+                    formControlName="description"
+                    (input)="updateResumeData()"
+                    rows="3"></textarea>
+                </div>
+                <div class="form-field">
+                  <label>Role:</label>
+                  <input 
+                    type="text" 
+                    formControlName="role"
+                    (input)="updateResumeData()" />
+                </div>
+                
+                <!-- Tech Stack -->
+                <div class="tech-stack-section">
+                  <div class="section-header">
+                    <h4>Tech Stack:</h4>
+                    <button type="button" (click)="addTechStack(i)">+ Add Tech</button>
+                  </div>
+                  
+                  <div formArrayName="techStack">
+                    <div 
+                      *ngFor="let tech of getTechStackArray(i).controls; let j = index" 
+                      class="tech-stack-item">
+                      <input 
+                        type="text" 
+                        [formControlName]="j"
+                        (input)="updateResumeData()" 
+                        placeholder="Technology name" />
+                      <button 
+                        type="button" 
+                        (click)="removeTechStack(i, j)" 
+                        class="remove-btn">×</button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Additional Info -->
+                <div class="additional-info-section">
+                  <div class="section-header">
+                    <h4>Additional Info:</h4>
+                    <button type="button" (click)="addAdditionalInfo(i)">+ Add Info</button>
+                  </div>
+                  
+                  <div formArrayName="additionalInfo">
+                    <div 
+                      *ngFor="let info of getAdditionalInfoArray(i).controls; let j = index" 
+                      [formGroupName]="j"
+                      class="additional-info-item">
+                      <input 
+                        type="text" 
+                        formControlName="key"
+                        (input)="updateResumeData()" 
+                        placeholder="Key" />
+                      <input 
+                        type="text" 
+                        formControlName="value"
+                        (input)="updateResumeData()" 
+                        placeholder="Value" />
+                      <button 
+                        type="button" 
+                        (click)="removeAdditionalInfo(i, j)" 
+                        class="remove-btn">×</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

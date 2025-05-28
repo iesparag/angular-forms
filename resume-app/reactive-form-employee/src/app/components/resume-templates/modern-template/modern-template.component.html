@@ -23,8 +23,16 @@
 
   <!-- Main Content -->
   <main class="main-content">
+    <!-- Professional Summary Section -->
+    <section class="section" *ngIf="resumeData?.sectionVisibility?.['professionalSummary']">
+      <h2>Professional Summary</h2>
+      <p>{{resumeData?.professionalSummary}}</p>
+    </section>
+
+
+
     <!-- Experience Section -->
-    <section class="section">
+    <section class="section" *ngIf="resumeData?.sectionVisibility?.['experience']">
       <h2>Professional Experience</h2>
       <div class="experience-list">
         <div *ngFor="let exp of resumeData?.experience" class="experience-item">
@@ -39,7 +47,7 @@
     </section>
 
     <!-- Education Section -->
-    <section class="section">
+    <section class="section" *ngIf="resumeData?.sectionVisibility?.['education']">
       <h2>Education</h2>
       <div class="education-list">
         <div *ngFor="let edu of resumeData?.education" class="education-item">
@@ -54,18 +62,24 @@
     </section>
 
     <!-- Skills Section -->
-    <section class="section">
+    <section class="section" *ngIf="resumeData?.sectionVisibility?.['skills']">
       <h2>Skills</h2>
       <div class="skills-list">
         <div *ngFor="let skill of resumeData?.skills" class="skill-item">
-          <h3>{{skill.skillName}}</h3>
+          <div class="skill-header">
+            <h3>{{skill.skillName}}</h3>
+            <span class="skill-level">{{skill.skillLevel}}/10</span>
+          </div>
+          <div class="skill-progress-container">
+            <div class="skill-progress-bar" [style.width]="(skill.skillLevel * 10) + '%'"></div>
+          </div>
           <p>{{skill.description}}</p>
         </div>
       </div>
     </section>
 
     <!-- Projects Section -->
-    <section class="section">
+    <section class="section" *ngIf="resumeData?.sectionVisibility?.['projects']">
       <h2>Projects</h2>
       <div class="projects-list">
         <div *ngFor="let project of resumeData?.projects" class="project-item">

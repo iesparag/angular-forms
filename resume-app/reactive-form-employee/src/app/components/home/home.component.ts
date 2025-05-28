@@ -13,7 +13,7 @@ export class HomeComponent {
   constructor(private router: Router) {}
 
   selectTemplate(templateType: string) {
-    // Navigate to the template preview page with the selected template type
-    this.router.navigate(['/template', templateType]);
+    // Navigate directly to the editor with the selected template type
+    this.router.navigate(['/editor', templateType]);
   }
 }
