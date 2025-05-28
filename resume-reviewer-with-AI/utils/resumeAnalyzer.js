@@ -4,7 +4,7 @@ class ResumeAnalyzer {
     static async analyzeResume(resumeText) {
         try {
             const response = await openai.chat.completions.create({
-                model: "gpt-4",
+                model: "gpt-3.5-turbo-0125",
                 messages: [
                     {
                         role: "system",
@@ -45,7 +45,7 @@ class ResumeAnalyzer {
 
             // Get tailored suggestions
             const analysis = await openai.chat.completions.create({
-                model: "gpt-4",
+                model: "gpt-3.5-turbo-0125",
                 messages: [
                     {
                         role: "system",

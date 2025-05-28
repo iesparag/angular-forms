@@ -15,7 +15,6 @@ export const createResume = async (req, res) => {
         width: 300,
         crop: 'scale'
       });
-
       profilePictureData = {
         url: result.secure_url,
         publicId: result.public_id
