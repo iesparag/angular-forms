@@ -1,1 +1,56 @@
-<p>home works!</p>
+<div class="template-gallery-container">
+  <div class="header">
+    <h1>Resume Builder</h1>
+    <p>Choose a template to get started with your professional resume</p>
+  </div>
+
+  <div class="template-gallery">
+    <!-- Modern Template -->
+    <div class="template-card" (click)="selectTemplate('modern')">
+      <div class="template-preview modern-preview">
+        <img src="assets/images/modern-template-preview.png" alt="Modern Template" onerror="this.src='assets/images/placeholder.png'" />
+      </div>
+      <div class="template-info">
+        <h3>Modern Template</h3>
+        <p>A clean, professional design with a modern layout</p>
+        <button class="use-template-btn">Use this template</button>
+      </div>
+    </div>
+
+    <!-- Minimal Template -->
+    <div class="template-card" (click)="selectTemplate('minimal')">
+      <div class="template-preview minimal-preview">
+        <img src="assets/images/minimal-template-preview.png" alt="Minimal Template" onerror="this.src='assets/images/placeholder.png'" />
+      </div>
+      <div class="template-info">
+        <h3>Minimal Template</h3>
+        <p>A simple, elegant design that focuses on content</p>
+        <button class="use-template-btn">Use this template</button>
+      </div>
+    </div>
+
+    <!-- Creative Template -->
+    <div class="template-card" (click)="selectTemplate('creative')">
+      <div class="template-preview creative-preview">
+        <img src="assets/images/creative-template-preview.png" alt="Creative Template" onerror="this.src='assets/images/placeholder.png'" />
+      </div>
+      <div class="template-info">
+        <h3>Creative Template</h3>
+        <p>Stand out with a unique and creative design</p>
+        <button class="use-template-btn">Use this template</button>
+      </div>
+    </div>
+
+    <!-- Professional Template -->
+    <div class="template-card" (click)="selectTemplate('professional')">
+      <div class="template-preview professional-preview">
+        <img src="assets/images/professional-template-preview.png" alt="Professional Template" onerror="this.src='assets/images/placeholder.png'" />
+      </div>
+      <div class="template-info">
+        <h3>Professional Template</h3>
+        <p>A traditional format perfect for corporate applications</p>
+        <button class="use-template-btn">Use this template</button>
+      </div>
+    </div>
+  </div>
+</div>

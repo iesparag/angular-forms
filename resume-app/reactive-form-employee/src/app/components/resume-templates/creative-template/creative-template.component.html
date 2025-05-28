@@ -1,0 +1,103 @@
+<div class="creative-resume">
+  <!-- Header with colorful sidebar -->
+  <div class="resume-container">
+    <div class="sidebar">
+      <div class="profile-image">
+        <!-- Placeholder for profile image -->
+        <div class="profile-placeholder">
+          <i class="fas fa-user"></i>
+        </div>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3>CONTACT</h3>
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span>{{resumeData?.personalDetails?.email}}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-phone"></i>
+          <span>{{resumeData?.personalDetails?.phone}}</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>{{resumeData?.address?.city}}, {{resumeData?.address?.state}}</span>
+        </div>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3>SKILLS</h3>
+        <div class="skills-container">
+          <div *ngFor="let skill of resumeData?.skills" class="skill-item">
+            <div class="skill-name">{{skill.skillName}}</div>
+            <div class="skill-bar">
+              <div class="skill-level"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="sidebar-section">
+        <h3>SOCIAL</h3>
+        <div *ngFor="let link of resumeData?.personalDetails?.socialLinks" class="social-item">
+          <i class="fas fa-link"></i>
+          <a [href]="link.url" target="_blank">{{link.platform}}</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="main-content">
+      <div class="header">
+        <h1>{{resumeData?.personalDetails?.name}}</h1>
+        <div class="colorful-bar"></div>
+      </div>
+      
+      <!-- Professional Summary -->
+      <div class="content-section">
+        <h2>PROFESSIONAL SUMMARY</h2>
+        <p>{{resumeData?.professionalSummary}}</p>
+      </div>
+      
+      <!-- Experience -->
+      <div class="content-section">
+        <h2>EXPERIENCE</h2>
+        <div *ngFor="let exp of resumeData?.experience" class="experience-item">
+          <div class="experience-header">
+            <h3>{{exp.jobTitle}} | {{exp.company}}</h3>
+            <span class="duration">{{exp.yearsWorked}}</span>
+          </div>
+          <p>{{exp.description}}</p>
+        </div>
+      </div>
+      
+      <!-- Education -->
+      <div class="content-section">
+        <h2>EDUCATION</h2>
+        <div *ngFor="let edu of resumeData?.education" class="education-item">
+          <div class="education-header">
+            <h3>{{edu.degree}} | {{edu.institution}}</h3>
+            <span class="year">{{edu.year}}</span>
+          </div>
+          <p>{{edu.description}}</p>
+        </div>
+      </div>
+      
+      <!-- Projects -->
+      <div class="content-section">
+        <h2>PROJECTS</h2>
+        <div *ngFor="let project of resumeData?.projects" class="project-item">
+          <h3>{{project.projectName}}</h3>
+          <div class="project-role">Role: {{project.role}}</div>
+          <p>{{project.description}}</p>
+          
+          <div *ngIf="project.techStack && project.techStack.length > 0" class="tech-stack">
+            <span class="tech-label">Technologies:</span>
+            <div class="tech-tags">
+              <span *ngFor="let tech of project.techStack" class="tech-tag">{{tech}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

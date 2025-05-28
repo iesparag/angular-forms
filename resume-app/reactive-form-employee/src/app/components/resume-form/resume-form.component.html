@@ -1,4 +1,15 @@
-<form [formGroup]="resumeForm" (ngSubmit)="submitForm()">
+<div class="resume-builder-container">
+  <!-- Toggle button to switch between form and preview -->
+  <div class="preview-toggle">
+    <button type="button" (click)="togglePreview()" class="toggle-btn">
+      {{ showPreview ? 'Edit Resume' : 'Preview Resume' }}
+    </button>
+  </div>
+
+  <!-- Form Section -->
+  <div *ngIf="!showPreview" class="form-container">
+    <form [formGroup]="resumeForm" (ngSubmit)="submitForm()">
+
   <h2 class="heading-border-bottom">Personal Details</h2>
   <div  formGroupName="personalDetails">
     <div class="grid-column">
@@ -47,6 +58,12 @@
     <label>Country: <input type="text" formControlName="country" /></label>
   </div>
   <!-- </div> -->
+
+  <h2 class="heading-border-bottom">Professional Summary</h2>
+  <div>
+    <label>Summary: <textarea formControlName="professionalSummary" placeholder="Write a brief summary of your professional background, skills, and career goals..."></textarea></label>
+  </div>
+  
   <div class="flex space-btw heading-border-bottom">
     <h2>Education</h2>
     <button type="button" (click)="addEducation()">+ Add Education</button>
@@ -180,4 +197,33 @@
   </div>
 
   <button type="submit">Submit Resume</button>
-</form>
+    </form>
+  </div>
+
+  <!-- Preview Section -->
+  <div *ngIf="showPreview" class="preview-container">
+    <div class="template-selector">
+      <h3>Select Template Style:</h3>
+      <div class="template-options">
+        <button [class.active]="selectedTemplate === 'modern'" (click)="selectedTemplate = 'modern'">Modern</button>
+        <button [class.active]="selectedTemplate === 'minimal'" (click)="selectedTemplate = 'minimal'">Minimal</button>
+        <button [class.active]="selectedTemplate === 'creative'" (click)="selectedTemplate = 'creative'">Creative</button>
+        <button [class.active]="selectedTemplate === 'professional'" (click)="selectedTemplate = 'professional'">Professional</button>
+      </div>
+    </div>
+    
+    <div class="resume-preview">
+      <!-- Modern Template -->
+      <app-modern-template *ngIf="selectedTemplate === 'modern'" [resumeData]="resumeData"></app-modern-template>
+      
+      <!-- Minimal Template -->
+      <app-minimal-template *ngIf="selectedTemplate === 'minimal'" [resumeData]="resumeData"></app-minimal-template>
+      
+      <!-- Creative Template -->
+      <app-creative-template *ngIf="selectedTemplate === 'creative'" [resumeData]="resumeData"></app-creative-template>
+      
+      <!-- Professional Template -->
+      <app-professional-template *ngIf="selectedTemplate === 'professional'" [resumeData]="resumeData"></app-professional-template>
+    </div>
+  </div>
+</div>

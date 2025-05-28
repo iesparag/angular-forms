@@ -1,0 +1,35 @@
+<div class="template-preview-container">
+  <div class="preview-header">
+    <h1>{{ templateType | titlecase }} Template</h1>
+    <div class="actions">
+      <button class="edit-button" (click)="editResume()">Edit This Resume</button>
+      <button class="back-button" routerLink="/">Back to Templates</button>
+    </div>
+  </div>
+
+  <div class="template-container">
+    <!-- Modern Template -->
+    <app-modern-template 
+      *ngIf="templateType === 'modern'" 
+      [resumeData]="sampleResumeData">
+    </app-modern-template>
+    
+    <!-- Minimal Template -->
+    <app-minimal-template 
+      *ngIf="templateType === 'minimal'" 
+      [resumeData]="sampleResumeData">
+    </app-minimal-template>
+    
+    <!-- Creative Template -->
+    <app-creative-template 
+      *ngIf="templateType === 'creative'" 
+      [resumeData]="sampleResumeData">
+    </app-creative-template>
+    
+    <!-- Professional Template -->
+    <app-professional-template 
+      *ngIf="templateType === 'professional'" 
+      [resumeData]="sampleResumeData">
+    </app-professional-template>
+  </div>
+</div>

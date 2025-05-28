@@ -1,19 +1,42 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ModernTemplateComponent } from '../resume-templates/modern-template/modern-template.component';
+import { MinimalTemplateComponent } from '../resume-templates/minimal-template/minimal-template.component';
+import { CreativeTemplateComponent } from '../resume-templates/creative-template/creative-template.component';
+import { ProfessionalTemplateComponent } from '../resume-templates/professional-template/professional-template.component';
 
 @Component({
   selector: 'app-resume-form',
   templateUrl: './resume-form.component.html',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    ModernTemplateComponent, 
+    MinimalTemplateComponent,
+    CreativeTemplateComponent,
+    ProfessionalTemplateComponent
+  ],
   styleUrls: ['./resume-form.component.css']
 })
-export class ResumeFormComponent {
-resumeForm: FormGroup;
+export class ResumeFormComponent implements OnInit {
+  resumeForm: FormGroup;
+  selectedTemplate: string = 'modern';
+  showPreview: boolean = false;
+  resumeData: any = {};
+  
+  ngOnInit() {
+    // Get the selected template from localStorage if available
+    const storedTemplate = localStorage.getItem('selectedTemplate');
+    if (storedTemplate) {
+      this.selectedTemplate = storedTemplate;
+    }
+  }
 
   constructor(private fb: FormBuilder) {
     this.resumeForm = this.fb.group({
+      professionalSummary: ['', Validators.required],
       personalDetails: this.fb.group({
         name: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
@@ -139,8 +162,30 @@ resumeForm: FormGroup;
   submitForm() {
     if (this.resumeForm.valid) {
       console.log('Resume Data:', this.resumeForm.value);
+      this.resumeData = this.resumeForm.value;
+      this.showPreview = true;
     } else {
       console.log('Form is invalid');
+      // Mark all fields as touched to show validation errors
+      this.markFormGroupTouched(this.resumeForm);
+    }
+  }
+  
+  // Helper method to mark all form controls as touched
+  markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+  
+  // Toggle between form and preview
+  togglePreview() {
+    this.showPreview = !this.showPreview;
+    if (this.showPreview) {
+      this.resumeData = this.resumeForm.value;
     }
   }
 }
