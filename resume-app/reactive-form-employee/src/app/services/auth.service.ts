@@ -30,7 +30,6 @@ export class AuthService {
   }
 
   public get currentUserValue(): User | null {
-    debugger; // Check 4: Getting current user
     console.log('Getting current user value');
     const value = this.currentUserSubject.value;
     console.log('Current user subject value:', value);
@@ -53,7 +52,6 @@ export class AuthService {
   }
 
   updateCurrentUser(user: User) {
-    debugger; // Check 5: Updating user
     this.currentUserSubject.next(user);
   }
 
@@ -87,7 +85,6 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    debugger; // Check 6: Checking login state
     console.log('AuthService - Checking login status');
     const user = this.currentUserValue;
     const isLoggedIn = !!user && !!user.token;

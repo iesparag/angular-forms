@@ -16,7 +16,6 @@ export class GoogleCallbackComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    debugger; // Check 1: Component initialization
     console.log('Google callback initialized');
     this.route.queryParams.subscribe(params => {
       console.log('Query params:', params);
@@ -25,7 +24,6 @@ export class GoogleCallbackComponent implements OnInit {
           const user = JSON.parse(params['user']);
           console.log('Parsed user:', user);
           // Create user data object with all required fields
-          debugger; // Check 2: Before creating user data
           const userData = {
             ...user,
             token: params['token']

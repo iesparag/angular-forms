@@ -19,7 +19,7 @@ router.route('/')
 
 router.route('/:id')
   .get(getResumeById)
-  .put(upload.single('profilePicture'), updateResume)
+  .put(updateResume)
   .delete(deleteResume);
 
 export default router;

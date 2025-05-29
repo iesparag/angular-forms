@@ -16,47 +16,80 @@ const resumeSchema = new mongoose.Schema({
     },
     socialLinks: [{
       platform: String,
-      url: String
+      url: String,
+      visible: { type: Boolean, default: true }
     }]
   },
   address: {
-    houseNumber: { type: String, required: true },
-    floor: { type: String, required: true },
-    street: { type: String, required: true },
-    city: { type: String, required: true },
+    houseNumber: { type: String },
+    floor: String,
+    street: String,
+    city: String,
     landmark: String,
-    state: { type: String, required: true },
-    country: { type: String, required: true }
+    state: String,
+    country: String
   },
-  education: [{
-    degree: { type: String, required: true },
-    institution: { type: String, required: true },
-    year: { type: String, required: true },
-    description: { type: String, required: true }
+  professionalSummary: String,
+  // References to other collections
+  educationIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Education'
   }],
-  experience: [{
-    jobTitle: { type: String, required: true },
-    company: { type: String, required: true },
-    yearsWorked: { type: String, required: true },
-    description: { type: String, required: true }
+  experienceIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Experience'
   }],
-  skills: [{
-    skillName: { type: String, required: true },
-    description: { type: String, required: true }
+  skillIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'UserSkill'
   }],
-  projects: [{
-    projectName: { type: String, required: true },
-    description: { type: String, required: true },
-    techStack: [String],
-    role: { type: String, required: true },
-    additionalInfo: [{
-      key: String,
-      value: String
-    }]
-  }]
+  projectIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project'
+  }],
+  isTemplate: { type: Boolean, default: false },
+  title: { type: String, required: true },
+  templateName: String,
+  visibility: {
+    type: String,
+    enum: ['private', 'public', 'template'],
+    default: 'private'
+  }
 }, {
   timestamps: true
 });
+
+// Method to populate all references
+resumeSchema.methods.populateAll = async function(session) {
+  const populateOptions = [
+    { 
+      path: 'educationIds',
+      select: 'degree institution year description visible'
+    },
+    {
+      path: 'skillIds',
+      populate: {
+        path: 'skill',
+        select: 'name category description'
+      },
+      select: 'description skillLevel visible'
+    },
+    {
+      path: 'experienceIds',
+      select: 'jobTitle company yearsWorked description visible industry location'
+    },
+    {
+      path: 'projectIds',
+      populate: {
+        path: 'techStack',
+        select: 'name category'
+      },
+      select: 'projectName description role additionalInfo visible status category teamSize links highlights'
+    }
+  ];
+
+  return await this.populate(populateOptions);
+};
 
 const Resume = mongoose.model('Resume', resumeSchema);
 export default Resume;

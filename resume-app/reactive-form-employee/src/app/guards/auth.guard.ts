@@ -12,7 +12,6 @@ export class AuthGuard {
   ) {}
 
   canActivate(): boolean {
-    debugger; // Check 7: Auth Guard
     console.log('AuthGuard - Checking if user is logged in');
     const currentUser = localStorage.getItem('currentUser');
     console.log('AuthGuard - Current user:', currentUser);

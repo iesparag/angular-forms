@@ -1,11 +1,14 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { ResumeListComponent } from '../resume-list/resume-list.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { SaveResumeModalComponent } from '../save-resume-modal/save-resume-modal.component';
+import { ResumeService } from '../../services/resume.service';
 import { HeaderComponent } from '../shared/header/header.component';
 import { AuthService } from '../../services/auth.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { ModernTemplateComponent } from '../resume-templates/modern-template/modern-template.component';
 import { MinimalTemplateComponent } from '../resume-templates/minimal-template/minimal-template.component';
 import { CreativeTemplateComponent } from '../resume-templates/creative-template/creative-template.component';
@@ -32,7 +35,9 @@ import { TimelineTemplateComponent } from '../resume-templates/timeline-template
     TechnicalTemplateComponent,
     CompactTemplateComponent,
     RatingTemplateComponent,
-    TimelineTemplateComponent
+    TimelineTemplateComponent,
+    SaveResumeModalComponent,
+    ResumeListComponent
   ],
   templateUrl: './resume-editor.component.html',
   styleUrls: ['./resume-editor.component.css']
@@ -51,11 +56,15 @@ export class ResumeEditorComponent implements OnInit {
     { id: 'timeline', name: 'Timeline', icon: 'fas fa-stream' }
   ];
   @ViewChild('previewContainer') previewContainer!: ElementRef;
+  @ViewChild('resumeList') resumeList!: ResumeListComponent;
   templateType: string = 'modern';
   resumeForm: FormGroup;
+  currentResumeId: string | null = null;
+  currentResume: any = null;
   resumeData: any = {};
   activeSection: string = 'personalDetails';
   isGeneratingPdf: boolean = false;
+  showSaveModal = false;
   
   // Track section visibility
   sectionVisibility: { [key: string]: boolean } = {
@@ -81,6 +90,7 @@ export class ResumeEditorComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private resumeService: ResumeService,
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService
@@ -305,7 +315,7 @@ export class ResumeEditorComponent implements OnInit {
         imagePosition: ['left'], // can be 'left', 'center', or 'right'
         email: ['', [Validators.required, Validators.email]],
         phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-        socialLinks: this.fb.array([]) // Array for social/contact links
+        socialLinks: this.fb.array([this.createSocialLink()]) // Initialize with one social link
       }),
       address: this.fb.group({ 
         houseNumber: ['', Validators.required],
@@ -316,7 +326,7 @@ export class ResumeEditorComponent implements OnInit {
         state: ['', Validators.required],
         country: ['', Validators.required]
       }),
-      education: this.fb.array([this.createEducation()]),
+      education: this.fb.array([this.createEducation()]), // Initialize with one education entry
       experience: this.fb.array([this.createExperience()]),
       skills: this.fb.array([this.createSkill()]),
       projects: this.fb.array([this.createProject()])
@@ -326,10 +336,11 @@ export class ResumeEditorComponent implements OnInit {
   // Helper methods to create form groups
   createEducation() {
     return this.fb.group({
-      degree: ['', Validators.required],
-      institution: ['', Validators.required],
-      year: ['', [Validators.required, Validators.pattern('^[0-9]{4}$')]],
-      description: ['', Validators.required]
+      degree: [''],
+      institution: [''],
+      year: [''],
+      description: [''],
+      visible: [true]
     });
   }
 
@@ -362,8 +373,9 @@ export class ResumeEditorComponent implements OnInit {
 
   createSocialLink() {
     return this.fb.group({
-      platform: ['', Validators.required], // e.g., 'GitHub', 'LinkedIn'
-      url: ['', [Validators.required, Validators.pattern('https?://.+')]]
+      platform: [''], // e.g., 'GitHub', 'LinkedIn'
+      url: [''],
+      visible: [true]
     });
   }
 
@@ -484,6 +496,120 @@ export class ResumeEditorComponent implements OnInit {
   }
 
   // Submit form
+  loadResume(resume: any) {
+    this.currentResumeId = resume._id;
+    this.currentResume = resume;
+    // Keep current template, don't change it
+    // this.templateType = resume.templateName;
+    
+    // Patch form values
+    this.resumeForm.patchValue({
+      personalDetails: resume.personalDetails,
+      address: resume.address,
+      professionalSummary: resume.professionalSummary
+    });
+    
+
+
+    // Handle arrays
+    const educationArray = this.resumeForm.get('education') as FormArray;
+    educationArray.clear();
+    if (resume.educationIds?.length) {
+      resume.educationIds.forEach((edu: any) => {
+        educationArray.push(this.fb.group({
+          degree: [edu.degree, Validators.required],
+          institution: [edu.institution, Validators.required],
+          year: [edu.year, Validators.required],
+          description: [edu.description],
+          visible: [edu.visible]
+        }));
+      });
+    }
+
+    const experienceArray = this.resumeForm.get('experience') as FormArray;
+    experienceArray.clear();
+    if (resume.experienceIds?.length) {
+      resume.experienceIds.forEach((exp: any) => {
+        experienceArray.push(this.fb.group({
+          jobTitle: [exp.jobTitle, Validators.required],
+          company: [exp.company, Validators.required],
+          yearsWorked: [exp.yearsWorked, Validators.required],
+          description: [exp.description],
+          industry: [exp.industry],
+          location: [exp.location],
+          visible: [exp.visible]
+        }));
+      });
+    }
+
+    const skillsArray = this.resumeForm.get('skills') as FormArray;
+    skillsArray.clear();
+    if (resume.skillIds?.length) {
+      resume.skillIds.forEach((skill: any) => {
+        skillsArray.push(this.fb.group({
+          skillName: [skill.skill.name, Validators.required],
+          category: [skill.skill.category],
+          description: [skill.description],
+          skillLevel: [skill.skillLevel],
+          visible: [skill.visible]
+        }));
+      });
+    }
+
+    const projectsArray = this.resumeForm.get('projects') as FormArray;
+    projectsArray.clear();
+    if (resume.projectIds?.length) {
+      resume.projectIds.forEach((proj: any) => {
+        const techStack = proj.techStack?.map((tech: any) => tech.name) || [];
+        projectsArray.push(this.fb.group({
+          projectName: [proj.projectName, Validators.required],
+          description: [proj.description],
+          role: [proj.role],
+          techStack: [techStack],
+          additionalInfo: this.fb.array(proj.additionalInfo || []),
+          visible: [proj.visible],
+          status: [proj.status],
+          category: [proj.category],
+          teamSize: [proj.teamSize],
+          links: [proj.links],
+          highlights: [proj.highlights]
+        }));
+      });
+    }
+
+    // Update template preview with new data after all form updates
+    this.updateResumeData();
+  }
+
+  onSaveResume(title: string) {
+    const resumeData = {
+      ...this.resumeForm.value,
+      title: title,
+      templateName: this.templateType
+    };
+
+    const request = this.currentResumeId ?
+      this.resumeService.updateResume(this.currentResumeId, resumeData) :
+      this.resumeService.saveResume(resumeData);
+
+    request.subscribe(
+      (response) => {
+        alert('Resume saved successfully!');
+        this.showSaveModal = false;
+        if (this.resumeList) {
+          this.resumeList.loadResumes(); // Refresh the list
+        }
+      },
+      (error) => {
+        alert('Error saving resume: ' + error.message);
+      }
+    );
+  }
+
+  onCancelSave() {
+    this.showSaveModal = false;
+  }
+
   submitForm() {
     if (!this.authService.isLoggedIn()) {
       // Store the current form data in session storage
@@ -493,14 +619,33 @@ export class ResumeEditorComponent implements OnInit {
       return;
     }
 
-    if (this.resumeForm.valid) {
-      console.log('Resume Data:', this.resumeForm.value);
-      // Here you would typically save the data or perform other actions
-      alert('Resume saved successfully!');
+    const educationArray = this.resumeForm.get('education') as FormArray;
+    const hasValidEducation = educationArray.length > 0 && educationArray.controls.some(control => !control.errors);
+
+    const personalDetails = this.resumeForm.get('personalDetails');
+    if (!personalDetails) return;
+    
+    const socialLinksArray = personalDetails.get('socialLinks') as FormArray;
+    const hasValidSocialLink = socialLinksArray.length > 0 && socialLinksArray.controls.some(control => !control.errors);
+
+    if (this.resumeForm.valid && hasValidEducation && hasValidSocialLink) {
+      this.showSaveModal = true;
     } else {
       console.log('Form is invalid');
       this.markFormGroupTouched(this.resumeForm);
-      alert('Please fill all required fields.');
+      
+      // Show validation errors
+      let errorMessage = 'Please fix the following errors:\n';
+      
+      if (!hasValidEducation) {
+        errorMessage += '- At least one valid education entry is required\n';
+      }
+      
+      if (!hasValidSocialLink) {
+        errorMessage += '- At least one valid social link is required\n';
+      }
+      
+      alert(errorMessage);
     }
   }
 
@@ -525,6 +670,12 @@ export class ResumeEditorComponent implements OnInit {
 
   toggleTemplateDropdown() {
     this.showTemplateDropdown = !this.showTemplateDropdown;
+  }
+
+  toggleResumeList() {
+    if (this.resumeList) {
+      this.resumeList.toggleList();
+    }
   }
 
   @HostListener('document:click', ['$event'])
@@ -558,40 +709,80 @@ export class ResumeEditorComponent implements OnInit {
     
     // Use setTimeout to allow the UI to update with the loading indicator
     setTimeout(() => {
+      // Calculate dimensions
+      const a4Width = 210; // A4 width in mm
+      const a4Height = 297; // A4 height in mm
+      const padding = 15; // Padding in mm (matching CSS)
+      
       // Use html2canvas to capture the element
       html2canvas(element, {
         scale: 2, // Higher scale for better quality
         useCORS: true, // Enable CORS for images
         allowTaint: true,
         logging: false,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        width: element.offsetWidth,
+        height: element.offsetHeight,
+        x: 0,
+        y: 0,
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
+        windowWidth: document.documentElement.offsetWidth,
+        windowHeight: document.documentElement.offsetHeight
       }).then(canvas => {
-        // Create PDF
+        // Create PDF with A4 size
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'mm',
-          format: 'a4'
+          format: 'a4',
+          compress: true
         });
+
+        // Calculate dimensions to fit content properly
+        const margin = 10; // 10mm margin
+        const pdfWidth = 210; // A4 width in mm
+        const pdfHeight = 297; // A4 height in mm
+        const contentWidth = pdfWidth - (2 * margin);
+        const contentHeight = pdfHeight - (2 * margin);
         
-        // Calculate dimensions to fit the content properly
-        const imgWidth = 210; // A4 width in mm
-        const pageHeight = 297; // A4 height in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        // Calculate scaling to maintain aspect ratio
+        const imgWidth = contentWidth;
+        const imgHeight = (canvas.height * contentWidth) / canvas.width;
+        
+        // Position for first page
         let heightLeft = imgHeight;
-        let position = 0;
+        let position = margin; // Start from top margin
         
         // Add image to PDF (first page)
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-        
+        pdf.addImage(
+          canvas.toDataURL('image/jpeg', 1.0),
+          'JPEG',
+          margin,
+          position,
+          imgWidth,
+          imgHeight,
+          '',
+          'FAST'
+        );
+        heightLeft -= (contentHeight);
+
         // Add new pages if the content is longer than one page
         while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
           pdf.addPage();
-          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
+          position = heightLeft - imgHeight + margin;
+          pdf.addImage(
+            canvas.toDataURL('image/jpeg', 1.0),
+            'JPEG',
+            margin,
+            position,
+            imgWidth,
+            imgHeight,
+            '',
+            'FAST'
+          );
+          heightLeft -= contentHeight;
         }
-        
+
         // Save the PDF
         pdf.save(fileName);
         
