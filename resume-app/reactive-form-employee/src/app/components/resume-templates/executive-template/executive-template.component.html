@@ -1,0 +1,98 @@
+<div class="resume-container">
+  <!-- Header Section -->
+  <header>
+    <div class="profile-section">
+      <div class="profile-image" *ngIf="resumeData?.personalDetails?.profileImage">
+        <img [src]="resumeData.personalDetails.profileImage" alt="Profile Picture">
+      </div>
+      <div class="header-content">
+        <h1>{{ resumeData?.personalDetails?.name }}</h1>
+        <div class="contact-info">
+          <p *ngIf="resumeData?.personalDetails?.email">
+            <i class="fas fa-envelope"></i> {{ resumeData.personalDetails.email }}
+          </p>
+          <p *ngIf="resumeData?.personalDetails?.phone">
+            <i class="fas fa-phone"></i> {{ resumeData.personalDetails.phone }}
+          </p>
+          <p *ngIf="resumeData?.address">
+            <i class="fas fa-map-marker-alt"></i>
+            {{ resumeData.address.city }}, {{ resumeData.address.state }}, {{ resumeData.address.country }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <!-- Left Column -->
+    <div class="left-column">
+      <!-- Professional Summary -->
+      <section class="summary-section" *ngIf="resumeData?.sectionVisibility?.['professionalSummary'] && resumeData?.professionalSummary">
+        <h2>Executive Summary</h2>
+        <p>{{ resumeData.professionalSummary }}</p>
+      </section>
+
+      <!-- Experience Section -->
+      <section class="experience-section" *ngIf="resumeData?.sectionVisibility?.['experience'] && resumeData?.experience?.length">
+        <h2>Professional Experience</h2>
+        <div class="experience-item" *ngFor="let exp of resumeData.experience">
+          <div class="experience-header">
+            <h3>{{ exp.jobTitle }}</h3>
+            <p class="company">{{ exp.company }}</p>
+            <p class="duration">{{ exp.yearsWorked }}</p>
+          </div>
+          <p class="description">{{ exp.description }}</p>
+        </div>
+      </section>
+
+      <!-- Projects Section -->
+      <section class="projects-section" *ngIf="resumeData?.sectionVisibility?.['projects'] && resumeData?.projects?.length">
+        <h2>Key Projects</h2>
+        <div class="project-item" *ngFor="let project of resumeData.projects">
+          <h3>{{ project.projectName }}</h3>
+          <p class="role">{{ project.role }}</p>
+          <p class="description">{{ project.description }}</p>
+          <div class="tech-stack" *ngIf="project.techStack?.length">
+            <h4>Technologies:</h4>
+            <ul>
+              <li *ngFor="let tech of project.techStack">{{ tech }}</li>
+            </ul>
+          </div>
+          <div class="additional-info" *ngIf="project.additionalInfo?.length">
+            <p *ngFor="let info of project.additionalInfo">
+              <strong>{{ info.key }}:</strong> {{ info.value }}
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-column">
+      <!-- Skills Section -->
+      <section class="skills-section" *ngIf="resumeData?.sectionVisibility?.['skills'] && resumeData?.skills?.length">
+        <h2>Core Competencies</h2>
+        <div class="skills-grid">
+          <div class="skill-item" *ngFor="let skill of resumeData.skills">
+            <h4>{{ skill.skillName }}</h4>
+            <div class="skill-level">
+              <div class="skill-bar" [style.width.%]="skill.skillLevel * 10"></div>
+            </div>
+            <p class="skill-description">{{ skill.description }}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Education Section -->
+      <section class="education-section" *ngIf="resumeData?.sectionVisibility?.['education'] && resumeData?.education?.length">
+        <h2>Education</h2>
+        <div class="education-item" *ngFor="let edu of resumeData.education">
+          <h3>{{ edu.degree }}</h3>
+          <p class="institution">{{ edu.institution }}</p>
+          <p class="year">{{ edu.year }}</p>
+          <p class="description">{{ edu.description }}</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

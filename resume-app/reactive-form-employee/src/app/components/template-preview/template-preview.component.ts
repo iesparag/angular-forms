@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ModernTemplateComponent } from '../resume-templates/modern-template/modern-template.component';
@@ -24,7 +25,11 @@ export class TemplatePreviewComponent implements OnInit {
   templateType: string = 'modern';
   sampleResumeData: any;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -38,11 +43,29 @@ export class TemplatePreviewComponent implements OnInit {
 
   editResume() {
     localStorage.setItem('selectedTemplate', this.templateType);
-    this.router.navigate(['/resume-form']);
+    
+    // Check if user is logged in
+    if (!this.authService.isLoggedIn()) {
+      // If not logged in, start Google login with template type
+      this.authService.navigateToLogin(`/editor/${this.templateType}`);
+      return;
+    }
+    
+    // If logged in, navigate to editor with selected template
+    this.router.navigate(['/editor', this.templateType]);
   }
 
   createSampleData() {
     return {
+      sectionVisibility: {
+        professionalSummary: true,
+        personalDetails: true,
+        address: true,
+        education: true,
+        experience: true,
+        skills: true,
+        projects: true
+      },
       professionalSummary: 'Experienced software developer with a passion for creating elegant, efficient solutions to complex problems. Skilled in full-stack development with a focus on modern JavaScript frameworks and cloud technologies.',
       personalDetails: {
         name: 'Alex Johnson',
@@ -93,14 +116,17 @@ export class TemplatePreviewComponent implements OnInit {
       skills: [
         {
           skillName: 'JavaScript/TypeScript',
+          skillLevel: 9,
           description: 'Expert in modern JavaScript and TypeScript, including ES6+ features and best practices.'
         },
         {
           skillName: 'React & Angular',
+          skillLevel: 8,
           description: 'Proficient in building responsive, scalable front-end applications using React and Angular frameworks.'
         },
         {
           skillName: 'Node.js',
+          skillLevel: 8,
           description: 'Experienced in building RESTful APIs and microservices using Node.js and Express.'
         }
       ],

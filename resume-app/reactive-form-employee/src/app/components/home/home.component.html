@@ -1,56 +1,174 @@
 <div class="template-gallery-container">
-  <div class="header">
-    <h1>Resume Builder</h1>
-    <p>Choose a template to get started with your professional resume</p>
-  </div>
-
-  <div class="template-gallery">
-    <!-- Modern Template -->
-    <div class="template-card" (click)="selectTemplate('modern')">
-      <div class="template-preview modern-preview">
-        <img src="assets/images/modern-template-preview.png" alt="Modern Template" onerror="this.src='assets/images/placeholder.png'" />
+  <div class="content-wrapper">
+    <!-- Sidebar with filters -->
+    <aside class="filters-sidebar">
+      <div class="sidebar-header">
+        <div class="app-logo">
+          <img src="assets/images/logo.svg" alt="Resume Builder Logo">
+          <div class="logo-text">
+            <span class="name">Parag Jain</span>
+            <span class="app-name">Resume<strong>Builder</strong></span>
+          </div>
+        </div>
       </div>
-      <div class="template-info">
-        <h3>Modern Template</h3>
-        <p>A clean, professional design with a modern layout</p>
-        <button class="use-template-btn">Use this template</button>
+      <div class="sidebar-content">
+        <div class="search-box">
+          <input type="text" 
+                [(ngModel)]="searchQuery" 
+                (ngModelChange)="onSearch()" 
+                placeholder="Search templates..." 
+                class="search-input">
+        </div>
+
+        <div class="sidebar-controls">
+        <!-- Search and View Controls -->
+        <div class="control-group">
+          <div class="view-toggle">
+            <button [class.active]="viewMode === 'grid'" (click)="toggleViewMode()" title="Grid View">
+              <i class="fas fa-th-large"></i>
+            </button>
+            <button [class.active]="viewMode === 'list'" (click)="toggleViewMode()" title="List View">
+              <i class="fas fa-list"></i>
+            </button>
+          </div>
+          <select class="sort-select" (change)="setSortBy($any($event.target).value)" [value]="activeFilters.sortBy">
+            <option value="popularity">Most Popular</option>
+            <option value="name">Name (A-Z)</option>
+          </select>
+        </div>
+
+        <!-- Categories -->
+        <div class="filter-section">
+          <h3><i class="fas fa-folder"></i> Categories</h3>
+          <div class="filter-options compact">
+            <label *ngFor="let category of categories" class="filter-option">
+              <input type="checkbox" 
+                     [checked]="activeFilters.categories.includes(category)"
+                     (change)="toggleCategory(category)">
+              <span class="checkbox-label">{{category}}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="filter-section">
+          <h3><i class="fas fa-tags"></i> Tags</h3>
+          <div class="filter-options compact">
+            <label *ngFor="let tag of tags" class="filter-option">
+              <input type="checkbox" 
+                     [checked]="activeFilters.tags.includes(tag)"
+                     (change)="toggleTag(tag)">
+              <span class="checkbox-label">{{tag}}</span>
+            </label>
+          </div>
+          </div>
+        </div>
+
+        <!-- User Profile Section -->
+        <div class="user-section">
+          <!-- Show when not logged in -->
+          <button *ngIf="!isLoggedIn" class="login-button" (click)="login()">
+            <i class="fas fa-sign-in-alt"></i>
+            Login to Save Templates
+          </button>
+
+          <!-- Show when logged in -->
+          <div *ngIf="isLoggedIn" class="user-profile" (click)="toggleProfileMenu()">
+            <div class="user-info">
+              <div class="user-avatar" [style.background-color]="user?.photoURL ? 'transparent' : getAvatarColor(user?.name)">
+                <img *ngIf="user?.photoURL" [src]="user?.photoURL" [alt]="user?.name">
+                <span *ngIf="!user?.photoURL" class="initials">{{ getInitials(user?.name) }}</span>
+              </div>
+              <div class="user-details">
+                <span class="user-name">{{ user?.name || 'User' }}</span>
+                <span class="user-email">{{ user?.email }}</span>
+              </div>
+            </div>
+            <i class="fas fa-chevron-right profile-arrow" [class.open]="isProfileMenuOpen"></i>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Profile Side Panel -->
+    <div class="profile-panel" [class.open]="isProfileMenuOpen">
+      <div class="profile-header">
+        <button class="close-profile" (click)="toggleProfileMenu()">
+          <i class="fas fa-times"></i>
+        </button>
+        <h2>Profile</h2>
+      </div>
+      
+      <div class="profile-content">
+        <div class="profile-info">
+          <div class="profile-avatar" [style.background-color]="user?.photoURL ? 'transparent' : getAvatarColor(user?.name)">
+            <img *ngIf="user?.photoURL" [src]="user?.photoURL" [alt]="user?.name">
+            <span *ngIf="!user?.photoURL" class="initials">{{ getInitials(user?.name) }}</span>
+          </div>
+          <h3>{{ user?.name }}</h3>
+          <p>{{ user?.email }}</p>
+        </div>
+
+        <div class="profile-actions">
+          <button class="edit-profile-btn">
+            <i class="fas fa-user-edit"></i>
+            Edit Profile
+          </button>
+          <button class="view-templates-btn">
+            <i class="fas fa-file-alt"></i>
+            My Templates
+          </button>
+          <button class="logout-btn" (click)="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Minimal Template -->
-    <div class="template-card" (click)="selectTemplate('minimal')">
-      <div class="template-preview minimal-preview">
-        <img src="assets/images/minimal-template-preview.png" alt="Minimal Template" onerror="this.src='assets/images/placeholder.png'" />
-      </div>
-      <div class="template-info">
-        <h3>Minimal Template</h3>
-        <p>A simple, elegant design that focuses on content</p>
-        <button class="use-template-btn">Use this template</button>
-      </div>
-    </div>
+    <!-- Main content -->
+    <main class="main-content">
+      <!-- <div class="header">
+        <h1>Resume Builder</h1>
+        <p>Choose a template to get started with your professional resume</p>
+      </div> -->
 
-    <!-- Creative Template -->
-    <div class="template-card" (click)="selectTemplate('creative')">
-      <div class="template-preview creative-preview">
-        <img src="assets/images/creative-template-preview.png" alt="Creative Template" onerror="this.src='assets/images/placeholder.png'" />
-      </div>
-      <div class="template-info">
-        <h3>Creative Template</h3>
-        <p>Stand out with a unique and creative design</p>
-        <button class="use-template-btn">Use this template</button>
-      </div>
-    </div>
+      <div [class]="'template-gallery ' + viewMode">
 
-    <!-- Professional Template -->
-    <div class="template-card" (click)="selectTemplate('professional')">
-      <div class="template-preview professional-preview">
-        <img src="assets/images/professional-template-preview.png" alt="Professional Template" onerror="this.src='assets/images/placeholder.png'" />
+        <div class="template-card" *ngFor="let template of displayedTemplates" (click)="selectTemplate(template.type)">
+          <div class="template-preview" [class]="template.type + '-preview'">
+            <img src="assets/images/placeholder.png" [alt]="template.name" />
+          </div>
+          <div class="template-info">
+            <h3>{{template.name}}</h3>
+            <div class="template-meta">
+              <span class="category-tag">{{template.category}}</span>
+              <span class="popularity">
+                <i class="fa-solid fa-star"></i>
+                {{template.popularity}}%
+              </span>
+            </div>
+            <p>{{template.description}}</p>
+            <div class="template-tags">
+              <span class="tag" *ngFor="let tag of template.tags">{{tag}}</span>
+            </div>
+            <button class="use-template-btn">Use this template</button>
+          </div>
+        </div>
       </div>
-      <div class="template-info">
-        <h3>Professional Template</h3>
-        <p>A traditional format perfect for corporate applications</p>
-        <button class="use-template-btn">Use this template</button>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button (click)="previousPage()" [disabled]="currentPage === 1">
+          <i class="fa-solid fa-chevron-left"></i>
+          Previous
+        </button>
+        <span class="current-page">Page {{currentPage}} of {{totalPages}}</span>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Next
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
       </div>
-    </div>
+    </main>
   </div>
 </div>

@@ -1,0 +1,352 @@
+.resume-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #fff;
+}
+
+/* Header Styles */
+header {
+  margin-bottom: 30px;
+  border-bottom: 2px solid #2c3e50;
+  padding-bottom: 20px;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #2c3e50;
+}
+
+.profile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.header-content {
+  flex: 1;
+}
+
+h1 {
+  font-size: 2.5em;
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  font-weight: bold;
+}
+
+.contact-info {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.contact-info p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #34495e;
+}
+
+.contact-info i {
+  color: #2c3e50;
+}
+
+/* Main Content Layout */
+.main-content {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  gap: 30px;
+}
+
+/* Section Styles */
+section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h2 {
+  color: #2c3e50;
+  font-size: 1.5em;
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #3498db;
+}
+
+/* Experience Section */
+.experience-item {
+  margin-bottom: 25px;
+}
+
+.experience-header {
+  margin-bottom: 10px;
+}
+
+.experience-header h3 {
+  color: #2c3e50;
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.company {
+  color: #34495e;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.duration {
+  color: #7f8c8d;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Skills Section */
+.skills-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.skill-item {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.skill-item h4 {
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+}
+
+.skill-level {
+  height: 6px;
+  background-color: #ecf0f1;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+
+.skill-bar {
+  height: 100%;
+  background-color: #3498db;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.skill-description {
+  color: #7f8c8d;
+  font-size: 0.9em;
+  margin: 5px 0 0 0;
+}
+
+/* Education Section */
+.education-item {
+  margin-bottom: 20px;
+}
+
+.education-item h3 {
+  color: #2c3e50;
+  font-size: 1.1em;
+  margin: 0 0 5px 0;
+}
+
+.institution {
+  color: #34495e;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+}
+
+.year {
+  color: #7f8c8d;
+  font-style: italic;
+  margin: 0 0 5px 0;
+}
+
+/* Projects Section */
+.project-item {
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.project-item h3 {
+  color: #2c3e50;
+  font-size: 1.1em;
+  margin: 0 0 5px 0;
+}
+
+.role {
+  color: #34495e;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
+
+.tech-stack {
+  margin-top: 10px;
+}
+
+.tech-stack h4 {
+  color: #2c3e50;
+  font-size: 0.9em;
+  margin: 0 0 5px 0;
+}
+
+.tech-stack ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tech-stack li {
+  background-color: #e1f0fa;
+  color: #2980b9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.additional-info {
+  margin-top: 10px;
+  font-size: 0.9em;
+}
+
+.additional-info p {
+  margin: 5px 0;
+}
+
+/* Print Styles */
+/* Print Visibility Control */
+@media screen {
+  .visible-print {
+    display: none !important;
+  }
+  .hidden-print {
+    display: block !important;
+  }
+}
+
+@media print {
+  .visible-print {
+    display: block !important;
+  }
+  .hidden-print {
+    display: none !important;
+  }
+}
+
+@media print {
+  .resume-container {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    max-width: none;
+    width: 100%;
+  }
+
+  /* Ensure content doesn't get cut off between pages */
+  section, article {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Prevent orphaned headers */
+  h1, h2, h3 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* Keep items together */
+  .experience-item, .education-item, .project-item {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Remove background colors and shadows for better printing */
+  section, .experience-item, .education-item, .project-item, .skill-item {
+    box-shadow: none !important;
+    background: none !important;
+    border: 1px solid #ddd;
+  }
+
+  /* Ensure proper page size and margins */
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+
+  /* Hide any unnecessary elements for print */
+  button, .no-print {
+    display: none !important;
+  }
+
+  /* Adjust spacing for print */
+  .main-content {
+    display: block;
+    margin: 1cm 0;
+  }
+
+  section {
+    margin-bottom: 1cm;
+  }
+
+  /* Ensure text remains readable */
+  body {
+    font-size: 12pt;
+    line-height: 1.3;
+    color: black;
+  }
+
+  /* Ensure links are readable */
+  a {
+    text-decoration: none;
+    color: black;
+  }
+
+  /* Adjust profile section for print */
+  .profile-section {
+    margin-bottom: 1cm;
+  }
+
+  .profile-image {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .resume-container {
+    padding: 20px;
+  }
+
+  .profile-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .contact-info {
+    justify-content: center;
+  }
+
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+}

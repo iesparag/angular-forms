@@ -1,0 +1,96 @@
+<div class="signup-container">
+  <div class="signup-card">
+    <h2>Create Account</h2>
+    
+    @if (error) {
+      <div class="error-message">
+        {{ error }}
+      </div>
+    }
+
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          formControlName="name" 
+          placeholder="Enter your full name"
+          [class.invalid]="signupForm.get('name')?.invalid && signupForm.get('name')?.touched"
+        >
+        @if (signupForm.get('name')?.invalid && signupForm.get('name')?.touched) {
+          <div class="error-text">
+            Name is required
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          placeholder="Enter your email"
+          [class.invalid]="signupForm.get('email')?.invalid && signupForm.get('email')?.touched"
+        >
+        @if (signupForm.get('email')?.invalid && signupForm.get('email')?.touched) {
+          <div class="error-text">
+            Please enter a valid email address
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password" 
+          placeholder="Enter your password"
+          [class.invalid]="signupForm.get('password')?.invalid && signupForm.get('password')?.touched"
+        >
+        @if (signupForm.get('password')?.invalid && signupForm.get('password')?.touched) {
+          <div class="error-text">
+            Password must be at least 6 characters long
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input 
+          type="password" 
+          id="confirmPassword" 
+          formControlName="confirmPassword" 
+          placeholder="Confirm your password"
+          [class.invalid]="(signupForm.get('confirmPassword')?.invalid || signupForm.hasError('passwordMismatch')) && signupForm.get('confirmPassword')?.touched"
+        >
+        @if ((signupForm.get('confirmPassword')?.invalid || signupForm.hasError('passwordMismatch')) && signupForm.get('confirmPassword')?.touched) {
+          <div class="error-text">
+            @if (signupForm.hasError('passwordMismatch')) {
+              Passwords do not match
+            } @else {
+              Please confirm your password
+            }
+          </div>
+        }
+      </div>
+
+      <button 
+        type="submit" 
+        class="signup-button" 
+        [disabled]="signupForm.invalid || loading">
+        @if (loading) {
+          <span class="spinner"></span>
+        } @else {
+          Create Account
+        }
+      </button>
+    </form>
+
+    <div class="auth-links">
+      Already have an account? <a routerLink="/auth/login">Login</a>
+    </div>
+  </div>
+</div>

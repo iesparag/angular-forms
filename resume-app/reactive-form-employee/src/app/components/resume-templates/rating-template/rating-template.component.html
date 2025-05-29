@@ -1,0 +1,185 @@
+<div class="resume-container">
+  <!-- Modern Header with Gradient -->
+  <header>
+    <div class="profile-section">
+      <div class="profile-image">
+        <ng-container *ngIf="resumeData?.personalDetails?.profileImage">
+          <img [src]="resumeData?.personalDetails?.profileImage" alt="Profile Picture">
+        </ng-container>
+        <ng-container *ngIf="!resumeData?.personalDetails?.profileImage">
+          <div class="image-placeholder">
+            <i class="fas fa-user"></i>
+          </div>
+        </ng-container>
+      </div>
+      <div class="header-content">
+        <h1>{{ resumeData?.personalDetails?.name }}</h1>
+        <p class="title">{{ resumeData?.personalDetails?.title }}</p>
+        <div class="contact-info">
+          <a *ngIf="resumeData?.personalDetails?.email" [href]="'mailto:' + resumeData.personalDetails.email">
+            <i class="fas fa-envelope"></i> {{ resumeData.personalDetails.email }}
+          </a>
+          <span *ngIf="resumeData?.personalDetails?.phone">
+            <i class="fas fa-phone"></i> {{ resumeData.personalDetails.phone }}
+          </span>
+          <a *ngIf="resumeData?.personalDetails?.linkedin" [href]="resumeData.personalDetails.linkedin" target="_blank">
+            <i class="fab fa-linkedin"></i> LinkedIn
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <!-- Professional Summary with Card Design -->
+    <section class="summary-section" *ngIf="resumeData?.sectionVisibility?.['professionalSummary'] && resumeData?.professionalSummary">
+      <div class="section-card">
+        <h2><i class="fas fa-user-tie"></i> Professional Summary</h2>
+        <p>{{ resumeData.professionalSummary }}</p>
+      </div>
+    </section>
+
+    <!-- Skills with Different Rating Styles -->
+    <section class="skills-section" *ngIf="resumeData?.sectionVisibility?.['skills'] && resumeData?.skills?.length">
+      <h2><i class="fas fa-star"></i> Skills & Expertise</h2>
+      <div class="skills-container">
+        <!-- Technical Skills with Star Rating -->
+        <div class="skill-category technical-skills">
+          <h3>Technical Skills</h3>
+          <div class="skill-list star-ratings">
+            <div class="skill-item" *ngFor="let skill of resumeData.skills">
+              <div class="skill-header">
+                <span class="skill-name">{{ skill.skillName }}</span>
+                <app-star-rating [(rating)]="skill.level" (ratingChange)="onSkillRatingChange(skill, $event)"></app-star-rating>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Circular Progress Skills -->
+        <div class="skill-category">
+          <h3>Language Skills</h3>
+          <div class="skill-list circular-progress">
+            <div class="skill-item" *ngFor="let skill of resumeData.languages">
+              <div class="circle-wrap">
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                  <path class="circle-bg"
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path class="circle"
+                    [attr.stroke-dasharray]="getCircleProgress(skill.level) + ', 100'"
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <text x="18" y="20.35" class="percentage">{{ skill.level * 20 }}%</text>
+                </svg>
+                <span class="skill-name">{{ skill.language }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience Timeline -->
+    <section class="experience-section" *ngIf="resumeData?.sectionVisibility?.['experience'] && resumeData?.experience?.length">
+      <h2><i class="fas fa-briefcase"></i> Professional Experience</h2>
+      <div class="timeline">
+        <div class="timeline-item" *ngFor="let exp of resumeData.experience">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="experience-header">
+              <h3>{{ exp.jobTitle }}</h3>
+              <span class="company">{{ exp.company }}</span>
+              <span class="duration">{{ exp.duration }}</span>
+            </div>
+            <ul class="achievements">
+              <li *ngFor="let achievement of exp.achievements">{{ achievement }}</li>
+            </ul>
+            <!-- Skill Tags -->
+            <div class="skill-tags" *ngIf="exp.technologiesUsed?.length">
+              <span class="tag" *ngFor="let tech of exp.technologiesUsed">{{ tech }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects with Card Design -->
+    <section class="projects-section" *ngIf="resumeData?.sectionVisibility?.['projects'] && resumeData?.projects?.length">
+      <h2><i class="fas fa-project-diagram"></i> Key Projects</h2>
+      <div class="projects-grid">
+        <div class="project-card" *ngFor="let project of resumeData.projects">
+          <div class="project-header">
+            <h3>{{ project.projectName }}</h3>
+            <span class="duration">{{ project.duration }}</span>
+          </div>
+          <p class="description">{{ project.description }}</p>
+          <!-- Project Impact Rating -->
+          <div class="impact-rating">
+            <span class="impact-label">Project Impact:</span>
+            <div class="impact-stars">
+              <span *ngFor="let star of getStarArray(4)" class="star filled">★</span>
+            </div>
+          </div>
+          <!-- Tech Stack -->
+          <div class="tech-stack">
+            <span class="tech-tag" *ngFor="let tech of project.techStack">{{ tech }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education with Modern Cards -->
+    <section class="education-section" *ngIf="resumeData?.sectionVisibility?.['education'] && resumeData?.education?.length">
+      <h2><i class="fas fa-graduation-cap"></i> Education</h2>
+      <div class="education-grid">
+        <div class="education-card" *ngFor="let edu of resumeData.education">
+          <div class="education-header">
+            <h3>{{ edu.degree }}</h3>
+            <span class="institution">{{ edu.institution }}</span>
+            <span class="year">{{ edu.year }}</span>
+          </div>
+          <div class="education-details">
+            <div class="gpa-meter" *ngIf="edu.gpa">
+              <div class="gpa-label">GPA</div>
+              <div class="gpa-value">{{ edu.gpa }}</div>
+              <div class="gpa-bar">
+                <div class="gpa-progress" [style.width.%]="edu.gpa * 25"></div>
+              </div>
+            </div>
+            <!-- Relevant Courses -->
+            <div class="courses" *ngIf="edu.relevantCourses?.length">
+              <h4>Key Courses:</h4>
+              <div class="course-tags">
+                <span class="course-tag" *ngFor="let course of edu.relevantCourses">
+                  {{ course }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Certifications with Badge Design -->
+    <section class="certifications-section" *ngIf="resumeData?.certifications?.length">
+      <h2><i class="fas fa-certificate"></i> Certifications</h2>
+      <div class="certifications-grid">
+        <div class="certification-badge" *ngFor="let cert of resumeData.certifications">
+          <div class="badge-icon">
+            <i class="fas fa-award"></i>
+          </div>
+          <div class="badge-content">
+            <h3>{{ cert.name }}</h3>
+            <span class="issuer">{{ cert.issuer }}</span>
+            <span class="date">{{ cert.date }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

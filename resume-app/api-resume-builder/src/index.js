@@ -1,11 +1,12 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import env from './config/config.js';
+import session from 'express-session';
+import passport from 'passport';
+import './config/passport.js';
 import cors from 'cors';
 import connectDB from './config/database.js';
 import userRoutes from './routes/userRoutes.js';
 import resumeRoutes from './routes/resumeRoutes.js';
-
-dotenv.config();
 
 const app = express();
 
@@ -15,6 +16,17 @@ connectDB();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Session middleware
+app.use(session({
+  secret: env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+
+// Initialize passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use('/api/users', userRoutes);
@@ -26,11 +38,11 @@ app.use((err, req, res, next) => {
   res.status(statusCode);
   res.json({
     message: err.message,
-    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+    stack: env.NODE_ENV === 'production' ? null : err.stack,
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

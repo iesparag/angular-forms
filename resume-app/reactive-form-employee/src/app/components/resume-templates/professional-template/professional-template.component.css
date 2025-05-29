@@ -167,7 +167,90 @@
   margin-bottom: 3px;
 }
 
-/* Responsive adjustments */
+/* Print Styles */
+@media print {
+  .resume-container {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    max-width: none;
+    width: 100%;
+  }
+
+  /* Ensure content doesn't get cut off between pages */
+  section, article {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Prevent orphaned headers */
+  h1, h2, h3 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  /* Keep items together */
+  .professional-item, .project-item, .education-item {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Remove background colors and shadows for better printing */
+  section, .professional-item, .project-item, .education-item {
+    box-shadow: none !important;
+    background: none !important;
+    border: 1px solid #ddd;
+  }
+
+  /* Ensure proper page size and margins */
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+
+  /* Hide any unnecessary elements for print */
+  button, .no-print {
+    display: none !important;
+  }
+
+  /* Adjust spacing for print */
+  .main-content {
+    display: block;
+    margin: 1cm 0;
+  }
+
+  section {
+    margin-bottom: 1cm;
+  }
+
+  /* Ensure text remains readable */
+  body {
+    font-size: 12pt;
+    line-height: 1.3;
+    color: black;
+  }
+
+  /* Ensure links are readable */
+  a {
+    text-decoration: none;
+    color: black;
+  }
+
+  /* Adjust professional style for print */
+  .professional-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5cm;
+  }
+
+  /* Optimize professional layout for print */
+  .professional-item {
+    padding: 0.5cm;
+    margin-bottom: 0.5cm;
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .professional-resume {
     padding: 15px;

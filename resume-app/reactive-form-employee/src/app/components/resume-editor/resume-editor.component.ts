@@ -1,6 +1,8 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HeaderComponent } from '../shared/header/header.component';
+import { AuthService } from '../../services/auth.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -8,23 +10,46 @@ import { ModernTemplateComponent } from '../resume-templates/modern-template/mod
 import { MinimalTemplateComponent } from '../resume-templates/minimal-template/minimal-template.component';
 import { CreativeTemplateComponent } from '../resume-templates/creative-template/creative-template.component';
 import { ProfessionalTemplateComponent } from '../resume-templates/professional-template/professional-template.component';
+import { ExecutiveTemplateComponent } from '../resume-templates/executive-template/executive-template.component';
+import { TechnicalTemplateComponent } from '../resume-templates/technical-template/technical-template.component';
+import { CompactTemplateComponent } from '../resume-templates/compact-template/compact-template.component';
+import { RatingTemplateComponent } from '../resume-templates/rating-template/rating-template.component';
+import { TimelineTemplateComponent } from '../resume-templates/timeline-template/timeline-template.component';
 
 @Component({
   selector: 'app-resume-editor',
   standalone: true,
   imports: [
     CommonModule,
+    HeaderComponent,
     ReactiveFormsModule,
     RouterLink,
     ModernTemplateComponent,
     MinimalTemplateComponent,
     CreativeTemplateComponent,
-    ProfessionalTemplateComponent
+    ProfessionalTemplateComponent,
+    ExecutiveTemplateComponent,
+    TechnicalTemplateComponent,
+    CompactTemplateComponent,
+    RatingTemplateComponent,
+    TimelineTemplateComponent
   ],
   templateUrl: './resume-editor.component.html',
   styleUrls: ['./resume-editor.component.css']
 })
 export class ResumeEditorComponent implements OnInit {
+  showTemplateDropdown = false;
+  templates = [
+    { id: 'modern', name: 'Modern', icon: 'fas fa-window-maximize' },
+    { id: 'minimal', name: 'Minimal', icon: 'fas fa-minus-square' },
+    { id: 'creative', name: 'Creative', icon: 'fas fa-paint-brush' },
+    { id: 'professional', name: 'Professional', icon: 'fas fa-briefcase' },
+    { id: 'executive', name: 'Executive', icon: 'fas fa-user-tie' },
+    { id: 'technical', name: 'Technical', icon: 'fas fa-code' },
+    { id: 'compact', name: 'Compact', icon: 'fas fa-compress' },
+    { id: 'rating', name: 'Rating', icon: 'fas fa-star' },
+    { id: 'timeline', name: 'Timeline', icon: 'fas fa-stream' }
+  ];
   @ViewChild('previewContainer') previewContainer!: ElementRef;
   templateType: string = 'modern';
   resumeForm: FormGroup;
@@ -57,7 +82,8 @@ export class ResumeEditorComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.resumeForm = this.createResumeForm();
   }
@@ -66,7 +92,7 @@ export class ResumeEditorComponent implements OnInit {
     // Get template type from route parameter
     this.route.paramMap.subscribe(params => {
       const type = params.get('type');
-      if (type && ['modern', 'minimal', 'creative', 'professional'].includes(type)) {
+      if (type && ['modern', 'minimal', 'creative', 'professional', 'executive', 'technical', 'compact', 'rating', 'timeline'].includes(type)) {
         this.templateType = type;
       }
     });
@@ -275,6 +301,8 @@ export class ResumeEditorComponent implements OnInit {
       professionalSummary: ['', Validators.required],
       personalDetails: this.fb.group({
         name: ['', Validators.required],
+        profileImage: [null],
+        imagePosition: ['left'], // can be 'left', 'center', or 'right'
         email: ['', [Validators.required, Validators.email]],
         phone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
         socialLinks: this.fb.array([]) // Array for social/contact links
@@ -407,7 +435,41 @@ export class ResumeEditorComponent implements OnInit {
       ...this.resumeForm.value,
       sectionVisibility: this.sectionVisibility
     };
-    console.log('Resume Data Updated:', this.resumeData);
+  }
+
+  onProfileImageSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imageUrl = reader.result as string;
+        this.resumeForm.patchValue({
+          personalDetails: {
+            profileImage: imageUrl
+          }
+        });
+        this.updateResumeData();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeProfileImage() {
+    this.resumeForm.patchValue({
+      personalDetails: {
+        profileImage: null
+      }
+    });
+    this.updateResumeData();
+  }
+
+  setImagePosition(position: 'left' | 'center' | 'right') {
+    this.resumeForm.patchValue({
+      personalDetails: {
+        imagePosition: position
+      }
+    });
+    this.updateResumeData();
   }
 
   // Set active section
@@ -423,6 +485,14 @@ export class ResumeEditorComponent implements OnInit {
 
   // Submit form
   submitForm() {
+    if (!this.authService.isLoggedIn()) {
+      // Store the current form data in session storage
+      sessionStorage.setItem('pendingResumeData', JSON.stringify(this.resumeForm.value));
+      // Redirect to login
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
     if (this.resumeForm.valid) {
       console.log('Resume Data:', this.resumeForm.value);
       // Here you would typically save the data or perform other actions
@@ -445,8 +515,24 @@ export class ResumeEditorComponent implements OnInit {
   }
 
   // Change template
-  changeTemplate(templateType: string) {
-    this.templateType = templateType;
+  changeTemplate(type: string) {
+    this.templateType = type;
+    this.updateResumeData();
+    this.showTemplateDropdown = false;
+    // Update URL without reloading
+    this.router.navigate(['/editor', type], { replaceUrl: true });
+  }
+
+  toggleTemplateDropdown() {
+    this.showTemplateDropdown = !this.showTemplateDropdown;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const templateSelector = document.querySelector('.template-selector');
+    if (templateSelector && !templateSelector.contains(event.target as Node)) {
+      this.showTemplateDropdown = false;
+    }
   }
 
   // Save as PDF using jsPDF and html2canvas

@@ -2,10 +2,16 @@
   <!-- Header with colorful sidebar -->
   <div class="resume-container">
     <div class="sidebar">
-      <div class="profile-image">
-        <!-- Placeholder for profile image -->
-        <div class="profile-placeholder">
-          <i class="fas fa-user"></i>
+      <div class="profile-section">
+        <div class="profile-image">
+          <ng-container *ngIf="resumeData?.personalDetails?.profileImage">
+            <img [src]="resumeData?.personalDetails?.profileImage" alt="Profile Picture">
+          </ng-container>
+          <ng-container *ngIf="!resumeData?.personalDetails?.profileImage">
+            <div class="profile-placeholder">
+              <i class="fas fa-user"></i>
+            </div>
+          </ng-container>
         </div>
       </div>
       
@@ -25,13 +31,13 @@
         </div>
       </div>
       
-      <div class="sidebar-section">
+      <div class="sidebar-section" *ngIf="resumeData?.sectionVisibility?.['skills']">
         <h3>SKILLS</h3>
         <div class="skills-container">
           <div *ngFor="let skill of resumeData?.skills" class="skill-item">
             <div class="skill-name">{{skill.skillName}}</div>
             <div class="skill-bar">
-              <div class="skill-level"></div>
+              <div class="skill-level" [style.width]="(skill.skillLevel * 10) + '%'"></div>
             </div>
           </div>
         </div>
@@ -48,18 +54,13 @@
     
     <div class="main-content">
       <div class="header">
-        <h1>{{resumeData?.personalDetails?.name}}</h1>
-        <div class="colorful-bar"></div>
-      </div>
-      
-      <!-- Professional Summary -->
-      <div class="content-section">
-        <h2>PROFESSIONAL SUMMARY</h2>
-        <p>{{resumeData?.professionalSummary}}</p>
+        <div class="header-content">
+          <h1>{{resumeData?.personalDetails?.name | uppercase}}</h1>
+        <p *ngIf="resumeData?.sectionVisibility?.['professionalSummary']">{{resumeData?.professionalSummary}}</p>
       </div>
       
       <!-- Experience -->
-      <div class="content-section">
+      <div class="content-section" *ngIf="resumeData?.sectionVisibility?.['experience']">
         <h2>EXPERIENCE</h2>
         <div *ngFor="let exp of resumeData?.experience" class="experience-item">
           <div class="experience-header">
@@ -71,7 +72,7 @@
       </div>
       
       <!-- Education -->
-      <div class="content-section">
+      <div class="content-section" *ngIf="resumeData?.sectionVisibility?.['education']">
         <h2>EDUCATION</h2>
         <div *ngFor="let edu of resumeData?.education" class="education-item">
           <div class="education-header">
@@ -83,7 +84,7 @@
       </div>
       
       <!-- Projects -->
-      <div class="content-section">
+      <div class="content-section" *ngIf="resumeData?.sectionVisibility?.['projects']">
         <h2>PROJECTS</h2>
         <div *ngFor="let project of resumeData?.projects" class="project-item">
           <h3>{{project.projectName}}</h3>

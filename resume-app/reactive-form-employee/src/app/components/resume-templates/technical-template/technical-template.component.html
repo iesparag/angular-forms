@@ -1,0 +1,143 @@
+<div class="resume-container">
+  <!-- Header with Technical Focus -->
+  <header>
+    <div class="header-content">
+      <div class="name-title">
+        <h1>{{ resumeData?.personalDetails?.name }}</h1>
+        <p class="title" *ngIf="resumeData?.personalDetails?.title">{{ resumeData.personalDetails.title }}</p>
+      </div>
+      <div class="contact-links">
+        <div class="contact-item" *ngIf="resumeData?.personalDetails?.email">
+          <i class="fas fa-envelope"></i>
+          <a [href]="'mailto:' + resumeData.personalDetails.email">{{ resumeData.personalDetails.email }}</a>
+        </div>
+        <div class="contact-item" *ngIf="resumeData?.personalDetails?.phone">
+          <i class="fas fa-phone"></i>
+          <span>{{ resumeData.personalDetails.phone }}</span>
+        </div>
+        <div class="contact-item" *ngIf="resumeData?.personalDetails?.github">
+          <i class="fab fa-github"></i>
+          <a [href]="resumeData.personalDetails.github" target="_blank">GitHub</a>
+        </div>
+        <div class="contact-item" *ngIf="resumeData?.personalDetails?.linkedin">
+          <i class="fab fa-linkedin"></i>
+          <a [href]="resumeData.personalDetails.linkedin" target="_blank">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <!-- Left Column -->
+    <div class="left-column">
+      <!-- Technical Skills Grid -->
+      <section class="skills-section" *ngIf="resumeData?.sectionVisibility?.['skills'] && resumeData?.skills?.length">
+        <h2>Technical Skills</h2>
+        <div class="skills-grid">
+          <div class="skill-category" *ngFor="let category of resumeData.skillCategories">
+            <h3>{{ category.name }}</h3>
+            <div class="skill-tags">
+              <span class="skill-tag" *ngFor="let skill of category.skills">
+                {{ skill.name }}
+                <div class="skill-level" *ngIf="skill.level">
+                  <div class="level-bar" [style.width.%]="skill.level * 20"></div>
+                </div>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Key Projects -->
+      <section class="projects-section" *ngIf="resumeData?.sectionVisibility?.['projects'] && resumeData?.projects?.length">
+        <h2>Key Projects</h2>
+        <div class="project-card" *ngFor="let project of resumeData.projects">
+          <div class="project-header">
+            <h3>{{ project.projectName }}</h3>
+            <span class="project-duration">{{ project.duration }}</span>
+          </div>
+          <p class="project-description">{{ project.description }}</p>
+          <div class="project-tech">
+            <h4>Technologies Used:</h4>
+            <div class="tech-tags">
+              <span class="tech-tag" *ngFor="let tech of project.techStack">{{ tech }}</span>
+            </div>
+          </div>
+          <ul class="project-achievements" *ngIf="project.achievements?.length">
+            <li *ngFor="let achievement of project.achievements">{{ achievement }}</li>
+          </ul>
+          <div class="project-links" *ngIf="project.links?.length">
+            <a *ngFor="let link of project.links" [href]="link.url" target="_blank" class="project-link">
+              <i [class]="link.icon"></i> {{ link.label }}
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-column">
+      <!-- Professional Summary -->
+      <section class="summary-section" *ngIf="resumeData?.sectionVisibility?.['professionalSummary'] && resumeData?.professionalSummary">
+        <h2>Professional Summary</h2>
+        <p>{{ resumeData.professionalSummary }}</p>
+      </section>
+
+      <!-- Work Experience -->
+      <section class="experience-section" *ngIf="resumeData?.sectionVisibility?.['experience'] && resumeData?.experience?.length">
+        <h2>Professional Experience</h2>
+        <div class="experience-item" *ngFor="let exp of resumeData.experience">
+          <div class="experience-header">
+            <div class="role-company">
+              <h3>{{ exp.jobTitle }}</h3>
+              <p class="company">{{ exp.company }}</p>
+            </div>
+            <span class="duration">{{ exp.duration }}</span>
+          </div>
+          <ul class="achievements">
+            <li *ngFor="let achievement of exp.achievements">{{ achievement }}</li>
+          </ul>
+          <div class="tech-used" *ngIf="exp.technologiesUsed?.length">
+            <span class="tech-tag" *ngFor="let tech of exp.technologiesUsed">{{ tech }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Education -->
+      <section class="education-section" *ngIf="resumeData?.sectionVisibility?.['education'] && resumeData?.education?.length">
+        <h2>Education</h2>
+        <div class="education-item" *ngFor="let edu of resumeData.education">
+          <div class="education-header">
+            <div class="degree-institution">
+              <h3>{{ edu.degree }}</h3>
+              <p class="institution">{{ edu.institution }}</p>
+            </div>
+            <span class="year">{{ edu.year }}</span>
+          </div>
+          <p class="gpa" *ngIf="edu.gpa">GPA: {{ edu.gpa }}</p>
+          <div class="relevant-courses" *ngIf="edu.relevantCourses?.length">
+            <h4>Relevant Coursework:</h4>
+            <div class="course-tags">
+              <span class="course-tag" *ngFor="let course of edu.relevantCourses">{{ course }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Certifications -->
+      <section class="certifications-section" *ngIf="resumeData?.certifications?.length">
+        <h2>Certifications</h2>
+        <div class="certification-grid">
+          <div class="certification-item" *ngFor="let cert of resumeData.certifications">
+            <h3>{{ cert.name }}</h3>
+            <p class="issuer">{{ cert.issuer }}</p>
+            <p class="cert-date">{{ cert.date }}</p>
+            <a *ngIf="cert.verificationUrl" [href]="cert.verificationUrl" target="_blank" class="verify-link">
+              <i class="fas fa-external-link-alt"></i> Verify
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

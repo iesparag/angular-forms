@@ -1,0 +1,198 @@
+<div class="resume-container">
+  <!-- Animated Header -->
+  <header class="header-section">
+    <div class="profile-info">
+      <div class="name-title">
+        <h1 class="animate-text">{{ resumeData?.personalDetails?.name }}</h1>
+        <div class="title-badge">
+          {{ resumeData?.personalDetails?.title }}
+        </div>
+      </div>
+      <div class="contact-links">
+        <a *ngIf="resumeData?.personalDetails?.email" [href]="'mailto:' + resumeData.personalDetails.email" class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span class="tooltip">{{ resumeData.personalDetails.email }}</span>
+        </a>
+        <a *ngIf="resumeData?.personalDetails?.phone" href="tel:{{ resumeData.personalDetails.phone }}" class="contact-item">
+          <i class="fas fa-phone"></i>
+          <span class="tooltip">{{ resumeData.personalDetails.phone }}</span>
+        </a>
+        <a *ngIf="resumeData?.personalDetails?.linkedin" [href]="resumeData.personalDetails.linkedin" target="_blank" class="contact-item">
+          <i class="fab fa-linkedin"></i>
+          <span class="tooltip">LinkedIn Profile</span>
+        </a>
+        <a *ngIf="resumeData?.personalDetails?.github" [href]="resumeData.personalDetails.github" target="_blank" class="contact-item">
+          <i class="fab fa-github"></i>
+          <span class="tooltip">GitHub Profile</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="timeline-content">
+    <!-- Professional Summary -->
+    <section class="summary-section" *ngIf="resumeData?.sectionVisibility?.['professionalSummary'] && resumeData?.professionalSummary">
+      <div class="section-header">
+        <i class="fas fa-user-circle"></i>
+        <h2>Professional Summary</h2>
+      </div>
+      <div class="summary-content animate-in">
+        <p>{{ resumeData.professionalSummary }}</p>
+      </div>
+    </section>
+
+    <!-- Skills Showcase -->
+    <section class="skills-section" *ngIf="resumeData?.sectionVisibility?.['skills'] && resumeData?.skills?.length">
+      <div class="section-header">
+        <i class="fas fa-code"></i>
+        <h2>Technical Expertise</h2>
+      </div>
+      <div class="skills-showcase">
+        <div class="skill-card" *ngFor="let skill of resumeData.skills" 
+             [style.animation-delay]="getRandomDelay()"
+             [style.background]="getSkillColor(skill.level)">
+          <div class="skill-header">
+            <span class="skill-name">{{ skill.skillName }}</span>
+            <span class="skill-level">{{ getExperienceLevel(skill.level) }}</span>
+          </div>
+          <div class="skill-meter">
+            <div class="meter-fill" [style.width.%]="getExperiencePercentage(skill.level)"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience Timeline -->
+    <section class="experience-timeline" *ngIf="resumeData?.sectionVisibility?.['experience'] && resumeData?.experience?.length">
+      <div class="section-header">
+        <i class="fas fa-briefcase"></i>
+        <h2>Professional Journey</h2>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item" *ngFor="let exp of resumeData.experience">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">{{ exp.duration }}</div>
+          <div class="timeline-content animate-in">
+            <div class="role-header">
+              <h3>{{ exp.jobTitle }}</h3>
+              <div class="company-badge">{{ exp.company }}</div>
+            </div>
+            <div class="achievements-list">
+              <div class="achievement-item" *ngFor="let achievement of exp.achievements">
+                <i class="fas fa-check-circle"></i>
+                <span>{{ achievement }}</span>
+              </div>
+            </div>
+            <div class="tech-stack" *ngIf="exp.technologiesUsed?.length">
+              <div class="tech-pill" *ngFor="let tech of exp.technologiesUsed">
+                {{ tech }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Showcase -->
+    <section class="projects-section" *ngIf="resumeData?.sectionVisibility?.['projects'] && resumeData?.projects?.length">
+      <div class="section-header">
+        <i class="fas fa-project-diagram"></i>
+        <h2>Notable Projects</h2>
+      </div>
+      <div class="projects-grid">
+        <div class="project-card animate-in" *ngFor="let project of resumeData.projects" 
+             [style.animation-delay]="getRandomDelay()">
+          <div class="project-header">
+            <h3>{{ project.projectName }}</h3>
+            <span class="project-duration">{{ project.duration }}</span>
+          </div>
+          <p class="project-description">{{ project.description }}</p>
+          <div class="project-stack">
+            <div class="stack-item" *ngFor="let tech of project.techStack"
+                 [style.background]="getSkillColor(3)">
+              {{ tech }}
+            </div>
+          </div>
+          <div class="project-metrics" *ngIf="project.metrics?.length">
+            <div class="metric-item" *ngFor="let metric of project.metrics">
+              <i class="fas fa-chart-line"></i>
+              <span>{{ metric }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education Timeline -->
+    <section class="education-section" *ngIf="resumeData?.sectionVisibility?.['education'] && resumeData?.education?.length">
+      <div class="section-header">
+        <i class="fas fa-graduation-cap"></i>
+        <h2>Educational Background</h2>
+      </div>
+      <div class="education-timeline">
+        <div class="education-item animate-in" *ngFor="let edu of resumeData.education">
+          <div class="education-dot"></div>
+          <div class="education-content">
+            <div class="education-header">
+              <h3>{{ edu.degree }}</h3>
+              <div class="institution-badge">{{ edu.institution }}</div>
+              <span class="education-year">{{ edu.year }}</span>
+            </div>
+            <div class="education-details">
+              <div class="gpa-display" *ngIf="edu.gpa">
+                <svg viewBox="0 0 36 36" class="gpa-chart">
+                  <path class="gpa-circle-bg"
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path class="gpa-circle"
+                    [attr.stroke-dasharray]="edu.gpa * 25 + ', 100'"
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <text x="18" y="20.35" class="gpa-text">{{ edu.gpa }}</text>
+                </svg>
+                <span class="gpa-label">GPA</span>
+              </div>
+              <div class="courses-grid" *ngIf="edu.relevantCourses?.length">
+                <div class="course-tag" *ngFor="let course of edu.relevantCourses">
+                  {{ course }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Certifications -->
+    <section class="certifications-section" *ngIf="resumeData?.certifications?.length">
+      <div class="section-header">
+        <i class="fas fa-certificate"></i>
+        <h2>Professional Certifications</h2>
+      </div>
+      <div class="certifications-grid">
+        <div class="cert-card animate-in" *ngFor="let cert of resumeData.certifications"
+             [style.animation-delay]="getRandomDelay()">
+          <div class="cert-icon">
+            <i class="fas fa-award"></i>
+          </div>
+          <div class="cert-details">
+            <h3>{{ cert.name }}</h3>
+            <div class="cert-meta">
+              <span class="issuer">{{ cert.issuer }}</span>
+              <span class="date">{{ cert.date }}</span>
+            </div>
+          </div>
+          <a *ngIf="cert.verificationUrl" [href]="cert.verificationUrl" target="_blank" class="verify-button">
+            <i class="fas fa-external-link-alt"></i>
+            Verify
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

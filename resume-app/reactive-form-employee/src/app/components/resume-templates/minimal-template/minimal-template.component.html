@@ -18,7 +18,7 @@
   </div>
 
   <!-- Professional Summary -->
-  <section>
+  <section *ngIf="resumeData?.sectionVisibility?.['professionalSummary']">
     <h2>Professional Summary</h2>
     <p class="summary-text">{{resumeData?.professionalSummary}}</p>
   </section>
@@ -26,7 +26,7 @@
 
 
   <!-- Experience -->
-  <section>
+  <section *ngIf="resumeData?.sectionVisibility?.['experience']">
     <h2>Experience</h2>
     <div class="experience-item" *ngFor="let exp of resumeData?.experience">
       <div class="item-header">
@@ -41,7 +41,7 @@
   </section>
 
   <!-- Skills -->
-  <section>
+  <section *ngIf="resumeData?.sectionVisibility?.['skills']">
     <h2>Skills</h2>
     <div class="skills-grid">
       <div class="skill-item" *ngFor="let skill of resumeData?.skills">
@@ -52,7 +52,7 @@
   </section>
 
   <!-- Education -->
-  <section>
+  <section *ngIf="resumeData?.sectionVisibility?.['education']">
     <h2>Education</h2>
     <div class="education-item" *ngFor="let edu of resumeData?.education">
       <div class="item-header">
@@ -67,7 +67,7 @@
   </section>
 
   <!-- Projects -->
-  <section>
+  <section *ngIf="resumeData?.sectionVisibility?.['projects']">
     <h2>Projects</h2>
     <div class="project-item" *ngFor="let project of resumeData?.projects">
       <h3>{{project.projectName}}</h3>

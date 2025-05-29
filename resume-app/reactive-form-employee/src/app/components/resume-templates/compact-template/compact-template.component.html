@@ -1,0 +1,94 @@
+<div class="resume-container">
+  <!-- Compact Header -->
+  <header>
+    <div class="header-main">
+      <h1>{{ resumeData?.personalDetails?.name }}</h1>
+      <p class="title" *ngIf="resumeData?.personalDetails?.title">{{ resumeData.personalDetails.title }}</p>
+    </div>
+    <div class="contact-bar">
+      <span *ngIf="resumeData?.personalDetails?.email">
+        <i class="fas fa-envelope"></i> {{ resumeData.personalDetails.email }}
+      </span>
+      <span *ngIf="resumeData?.personalDetails?.phone">
+        <i class="fas fa-phone"></i> {{ resumeData.personalDetails.phone }}
+      </span>
+      <span *ngIf="resumeData?.address">
+        <i class="fas fa-map-marker-alt"></i> {{ resumeData.address.city }}, {{ resumeData.address.state }}
+      </span>
+      <span *ngIf="resumeData?.personalDetails?.linkedin">
+        <i class="fab fa-linkedin"></i>
+        <a [href]="resumeData.personalDetails.linkedin" target="_blank">LinkedIn</a>
+      </span>
+    </div>
+  </header>
+
+  <!-- Professional Summary -->
+  <section class="summary-section" *ngIf="resumeData?.sectionVisibility?.['professionalSummary'] && resumeData?.professionalSummary">
+    <p class="summary">{{ resumeData.professionalSummary }}</p>
+  </section>
+
+  <!-- Core Skills -->
+  <section class="skills-section" *ngIf="resumeData?.sectionVisibility?.['skills'] && resumeData?.skills?.length">
+    <h2>Core Skills</h2>
+    <div class="skills-container">
+      <span class="skill-tag" *ngFor="let skill of resumeData.skills">{{ skill.skillName }}</span>
+    </div>
+  </section>
+
+  <!-- Professional Experience -->
+  <section class="experience-section" *ngIf="resumeData?.sectionVisibility?.['experience'] && resumeData?.experience?.length">
+    <h2>Professional Experience</h2>
+    <div class="experience-item" *ngFor="let exp of resumeData.experience">
+      <div class="experience-header">
+        <div class="position-company">
+          <strong>{{ exp.jobTitle }}</strong> at {{ exp.company }}
+        </div>
+        <span class="duration">{{ exp.duration }}</span>
+      </div>
+      <ul class="achievements-list">
+        <li *ngFor="let achievement of exp.achievements">{{ achievement }}</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Education -->
+  <section class="education-section" *ngIf="resumeData?.sectionVisibility?.['education'] && resumeData?.education?.length">
+    <h2>Education</h2>
+    <div class="education-grid">
+      <div class="education-item" *ngFor="let edu of resumeData.education">
+        <div class="education-header">
+          <strong>{{ edu.degree }}</strong>
+          <span class="year">{{ edu.year }}</span>
+        </div>
+        <div class="institution">{{ edu.institution }}</div>
+        <div class="gpa" *ngIf="edu.gpa">GPA: {{ edu.gpa }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="projects-section" *ngIf="resumeData?.sectionVisibility?.['projects'] && resumeData?.projects?.length">
+    <h2>Key Projects</h2>
+    <div class="projects-grid">
+      <div class="project-item" *ngFor="let project of resumeData.projects">
+        <div class="project-header">
+          <strong>{{ project.projectName }}</strong>
+          <span class="tech-stack">
+            <span class="tech" *ngFor="let tech of project.techStack">{{ tech }}</span>
+          </span>
+        </div>
+        <p class="project-description">{{ project.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Certifications -->
+  <section class="certifications-section" *ngIf="resumeData?.certifications?.length">
+    <h2>Certifications</h2>
+    <div class="certifications-list">
+      <span class="certification" *ngFor="let cert of resumeData.certifications">
+        {{ cert.name }} ({{ cert.issuer }})
+      </span>
+    </div>
+  </section>
+</div>

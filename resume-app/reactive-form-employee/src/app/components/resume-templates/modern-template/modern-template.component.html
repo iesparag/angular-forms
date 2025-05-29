@@ -1,23 +1,30 @@
 <div class="modern-resume">
   <!-- Header Section -->
   <header class="header">
-    <div class="name-title">
-      <h1>{{resumeData?.personalDetails?.name}}</h1>
-    </div>
-    <div class="contact-info">
-      <p><i class="fas fa-envelope"></i> {{resumeData?.personalDetails?.email}}</p>
-      <p><i class="fas fa-phone"></i> {{resumeData?.personalDetails?.phone}}</p>
-      <p><i class="fas fa-map-marker-alt"></i> 
-        {{resumeData?.address?.city}}, {{resumeData?.address?.state}}, {{resumeData?.address?.country}}
-      </p>
-    </div>
-    <!-- Social Links -->
-    <div class="social-links">
-      <ng-container *ngFor="let link of resumeData?.personalDetails?.socialLinks">
-        <a [href]="link.url" target="_blank" class="social-link">
-          <i class="fas fa-link"></i> {{link.platform}}
-        </a>
-      </ng-container>
+    <div class="header-content">
+      <div class="profile-info" [class]="'image-' + (resumeData?.personalDetails?.imagePosition || 'left')">
+        <div class="profile-image" *ngIf="resumeData?.personalDetails?.profileImage">
+          <img [src]="resumeData?.personalDetails?.profileImage" alt="Profile Picture">
+        </div>
+        <div class="name-title">
+          <h1>{{resumeData?.personalDetails?.name | uppercase}}</h1>
+        </div>
+      </div>
+      <div class="contact-info">
+        <p><i class="fa-solid fa-envelope"></i> {{resumeData?.personalDetails?.email}}</p>
+        <p><i class="fa-solid fa-phone"></i> {{resumeData?.personalDetails?.phone}}</p>
+        <p><i class="fa-solid fa-location-dot"></i> 
+          {{resumeData?.address?.city}}, {{resumeData?.address?.state}}, {{resumeData?.address?.country}}
+        </p>
+      </div>
+      <!-- Social Links -->
+      <div class="social-links">
+        <ng-container *ngFor="let link of resumeData?.personalDetails?.socialLinks">
+          <a [href]="link.url" target="_blank" class="social-link">
+            <i class="fa-solid fa-link"></i> {{link.platform}}
+          </a>
+        </ng-container>
+      </div>
     </div>
   </header>
 

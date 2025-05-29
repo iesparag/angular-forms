@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="40" height="40" rx="8" fill="#0066FF"/>
+    <text x="20" y="25" font-family="Arial" font-size="18" font-weight="bold" fill="white" text-anchor="middle">PJ</text>
+    <path d="M8 32H32V34H8V32Z" fill="white" fill-opacity="0.6"/>
+    <path d="M12 28H28V30H12V28Z" fill="white" fill-opacity="0.8"/>
+</svg>

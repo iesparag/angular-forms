@@ -1,31 +1,46 @@
+<app-header></app-header>
+
 <div class="resume-editor-container">
   <!-- Header with template selection -->
   <header class="editor-header">
-    <div class="template-info">
-      <h1>{{ templateType | titlecase }} Resume</h1>
-    </div>
-    <div class="template-actions">
-      <div class="template-selector">
-        <label>Template Style:</label>
-        <div class="template-buttons">
-          <button 
-            [class.active]="templateType === 'modern'" 
-            (click)="changeTemplate('modern')">Modern</button>
-          <button 
-            [class.active]="templateType === 'minimal'" 
-            (click)="changeTemplate('minimal')">Minimal</button>
-          <button 
-            [class.active]="templateType === 'creative'" 
-            (click)="changeTemplate('creative')">Creative</button>
-          <button 
-            [class.active]="templateType === 'professional'" 
-            (click)="changeTemplate('professional')">Professional</button>
+    <div class="header-content">
+      <div class="left-actions">
+        <button class="icon-button" routerLink="/" title="Back to Templates">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="template-selector">
+          <button class="template-dropdown-btn" (click)="toggleTemplateDropdown()">
+            <span>{{ templateType | titlecase }}</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="template-dropdown" *ngIf="showTemplateDropdown">
+            <button 
+              *ngFor="let template of templates" 
+              [class.active]="templateType === template.id"
+              (click)="changeTemplate(template.id)">
+              <i [class]="template.icon"></i>
+              {{ template.name }}
+            </button>
+          </div>
         </div>
       </div>
-      <div class="action-buttons">
-        <button class="save-button" (click)="submitForm()">Save Resume</button>
-        <button class="pdf-button" (click)="saveAsPdf()">Download PDF</button>
-        <button class="back-button" routerLink="/">Back to Templates</button>
+
+      <div class="section-tabs">
+        <button 
+          *ngFor="let section of sections" 
+          [class.active]="activeSection === section.id"
+          (click)="setActiveSection(section.id)">
+          {{ section.name }}
+        </button>
+      </div>
+
+      <div class="right-actions">
+        <button class="icon-button" (click)="submitForm()" title="Save Resume">
+          <i class="fas fa-save"></i>
+        </button>
+        <button class="icon-button" (click)="saveAsPdf()" title="Download PDF">
+          <i class="fas fa-file-pdf"></i>
+        </button>
       </div>
     </div>
   </header>
@@ -58,21 +73,23 @@
           *ngIf="templateType === 'professional'" 
           [resumeData]="resumeData">
         </app-professional-template>
+
+        <!-- Executive Template -->
+        <app-executive-template 
+          *ngIf="templateType === 'executive'" 
+          [resumeData]="resumeData">
+        </app-executive-template>
+        <app-technical-template *ngIf="templateType === 'technical'" [resumeData]="resumeData"></app-technical-template>
+        <app-compact-template *ngIf="templateType === 'compact'" [resumeData]="resumeData"></app-compact-template>
+        <app-rating-template *ngIf="templateType === 'rating'" [resumeData]="resumeData"></app-rating-template>
+        <app-timeline-template *ngIf="templateType === 'timeline'" [resumeData]="resumeData"></app-timeline-template>
       </div>
     </div>
 
     <!-- Right side: Form editor -->
     <div class="editor-pane">
-      <div class="section-tabs">
-        <button 
-          *ngFor="let section of sections" 
-          [class.active]="activeSection === section.id"
-          (click)="setActiveSection(section.id)">
-          {{ section.name }}
-        </button>
-      </div>
 
-      <div class="form-container">
+      <div class="editor-container">
         <form [formGroup]="resumeForm" (ngSubmit)="submitForm()">
           <!-- Professional Summary Section -->
           <div *ngIf="activeSection === 'professionalSummary'" class="form-section">
@@ -101,12 +118,36 @@
               <h2>Personal Details</h2>
             </div>
             <div class="form-field">
-              <label>Full Name:</label>
+              <label>Name:</label>
               <input 
                 type="text" 
                 formControlName="name" 
                 placeholder="Your full name"
                 (input)="updateResumeData()" />
+            </div>
+            
+            <div class="form-field">
+              <label>Profile Picture:</label>
+              <div class="profile-upload">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  (change)="onProfileImageSelected($event)"
+                  #fileInput
+                  style="display: none" />
+                <div class="image-preview" *ngIf="resumeData?.personalDetails?.profileImage">
+                  <img [src]="resumeData?.personalDetails?.profileImage" alt="Profile Preview">
+                  <button type="button" class="remove-image" (click)="removeProfileImage()">×</button>
+
+                </div>
+                <button 
+                  type="button" 
+                  class="upload-btn" 
+                  (click)="fileInput.click()"
+                  *ngIf="!resumeData?.personalDetails?.profileImage">
+                  Upload Profile Picture
+                </button>
+              </div>
             </div>
             <div class="form-field">
               <label>Email:</label>
