@@ -1,0 +1,39 @@
+<header class="app-header">
+  <div class="logo-section">
+    <mat-icon class="logo-icon">description</mat-icon>
+    <span class="logo-text">Resume Builder</span>
+  </div>
+  <div class="user-section">
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-button">
+      <mat-icon>account_circle</mat-icon>
+      <span class="user-name">John Doe</span>
+    </button>
+    <mat-menu #userMenu="matMenu" class="user-menu">
+      <div class="menu-header">
+        <mat-icon class="avatar">account_circle</mat-icon>
+        <div class="user-info">
+          <span class="name">John Doe</span>
+          <span class="email">user&#64;example.com</span>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>My Profile</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>description</mat-icon>
+        <span>My Resumes</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item class="logout-item">
+        <mat-icon>logout</mat-icon>
+        <span>Sign Out</span>
+      </button>
+    </mat-menu>
+  </div>
+</header>

@@ -3,3 +3,54 @@
                 margin: 0;
                 padding: 0;
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Email Compose Dialog Styles */
+.email-compose-dialog {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  margin: 0 !important;
+}
+
+.email-compose-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.email-compose-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.email-compose-dialog .mat-mdc-dialog-content {
+  max-height: calc(80vh - 120px) !important;
+  padding: 0 !important;
+}
+
+.email-compose-dialog .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* Add some transition effects */
+.email-compose-dialog {
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.email-compose-dialog.cdk-overlay-pane {
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

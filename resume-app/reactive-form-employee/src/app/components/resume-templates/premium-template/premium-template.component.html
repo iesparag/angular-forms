@@ -1,0 +1,324 @@
+<div class="premium-resume">
+  <!-- Modern Header with Profile -->
+  <header class="header mat-elevation-z2">
+    <div class="header-content">
+      <div class="profile-section">
+        <div class="profile-image" *ngIf="resumeData?.personalDetails?.profileImage">
+          <img [src]="resumeData?.personalDetails?.profileImage" alt="Profile Picture" class="mat-elevation-z3">
+        </div>
+        <div class="name-title">
+          <h1>{{resumeData?.personalDetails?.name | uppercase}}</h1>
+          <h2 class="title">{{resumeData?.personalDetails?.title}}</h2>
+          <div class="contact-info">
+            <table class="contact-table">
+              <tr>
+                <td><i class="fas fa-envelope"></i></td>
+                <td>{{resumeData?.personalDetails?.email}}</td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-phone"></i></td>
+                <td>{{resumeData?.personalDetails?.phone}}</td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-map-marker-alt"></i></td>
+                <td>{{resumeData?.address?.city}}, {{resumeData?.address?.state}}, {{resumeData?.address?.country}}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="social-section">
+        <div class="social-links">
+          <a mat-icon-button *ngFor="let link of resumeData?.personalDetails?.socialLinks" 
+             [href]="link.url" 
+             target="_blank"
+             [matTooltip]="link.platform"
+             class="social-link">
+            <i [class]="getSocialIcon(link.platform)"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <!-- Professional Summary Card -->
+    <section class="summary-section" *ngIf="resumeData?.sectionVisibility?.['professionalSummary']">
+      <mat-card class="summary-card mat-elevation-z3">
+        <mat-card-header>
+          <mat-card-title>
+            <i class="fas fa-user-circle"></i> Professional Summary
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p class="summary-text">{{resumeData?.professionalSummary}}</p>
+          <table class="summary-details-table" *ngIf="resumeData?.highlights?.length">
+            <tbody>
+              <tr *ngFor="let highlight of resumeData?.highlights">
+                <td><i class="fas fa-check-circle"></i></td>
+                <td>{{highlight}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <!-- Skills Section with Modern Cards -->
+    <section class="skills-section" *ngIf="resumeData?.sectionVisibility?.['skills']">
+      <mat-card class="skills-card mat-elevation-z3">
+        <mat-card-header>
+          <mat-card-title>
+            <i class="fas fa-tools"></i> Technical Skills
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="skills-grid">
+            <mat-card class="skill-category" *ngFor="let category of resumeData?.skillCategories">
+              <mat-card-header>
+                <mat-card-title>{{category.name}}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <table class="skills-table">
+                  <tbody>
+                    <tr *ngFor="let skill of category.skills">
+                      <td class="skill-name">{{skill.name}}</td>
+                      <td class="skill-level">
+                        <mat-progress-bar mode="determinate" [value]="skill.level * 10"></mat-progress-bar>
+                      </td>
+                      <td class="skill-rating">
+                        <span class="rating-text">{{skill.level}}/10</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <!-- Experience Section with Timeline Cards -->
+    <section class="experience-section" *ngIf="resumeData?.sectionVisibility?.['experience']">
+      <mat-card class="experience-card mat-elevation-z3">
+        <mat-card-header>
+          <mat-card-title>
+            <i class="fas fa-briefcase"></i> Professional Experience
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="timeline">
+            <div class="timeline-item" *ngFor="let exp of resumeData?.experience">
+              <div class="timeline-marker"></div>
+              <mat-card class="experience-item-card mat-elevation-z2">
+                <mat-card-header>
+                  <div mat-card-avatar>
+                    <i class="fas fa-building company-icon"></i>
+                  </div>
+                  <mat-card-title>{{exp.jobTitle}}</mat-card-title>
+                  <mat-card-subtitle>
+                    <strong>{{exp.company}}</strong>
+                    <span class="duration">
+                      <i class="far fa-calendar-alt"></i> {{exp.duration}}
+                    </span>
+                  </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <p class="job-description" *ngIf="exp.description">{{exp.description}}</p>
+                  
+                  <div class="key-achievements" *ngIf="exp.achievements?.length">
+                    <h4><i class="fas fa-trophy"></i> Key Achievements</h4>
+                    <table class="achievements-table">
+                      <tbody>
+                        <tr *ngFor="let achievement of exp.achievements">
+                          <td class="icon-cell"><i class="fas fa-check-circle"></i></td>
+                          <td>{{achievement}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="responsibilities" *ngIf="exp.responsibilities?.length">
+                    <h4><i class="fas fa-tasks"></i> Key Responsibilities</h4>
+                    <ul class="responsibility-list">
+                      <li *ngFor="let responsibility of exp.responsibilities">
+                        {{responsibility}}
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div class="tech-stack" *ngIf="exp.technologies?.length">
+                    <h4><i class="fas fa-code"></i> Technologies Used</h4>
+                    <div class="tech-badges">
+                      <span class="tech-badge" *ngFor="let tech of exp.technologies">{{tech}}</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <!-- Education Section with Cards -->
+    <section class="education-section" *ngIf="resumeData?.sectionVisibility?.['education']">
+      <mat-card class="education-card mat-elevation-z3">
+        <mat-card-header>
+          <mat-card-title>
+            <i class="fas fa-graduation-cap"></i> Education
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="education-grid">
+            <mat-card class="education-item-card mat-elevation-z2" *ngFor="let edu of resumeData?.education">
+              <mat-card-header>
+                <div mat-card-avatar>
+                  <i class="fas fa-university"></i>
+                </div>
+                <mat-card-title>{{edu.degree}}</mat-card-title>
+                <mat-card-subtitle>{{edu.institution}}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <table class="education-details-table">
+                  <tbody>
+                    <tr>
+                      <td class="icon-cell"><i class="far fa-calendar-alt"></i></td>
+                      <td><strong>Duration:</strong></td>
+                      <td>{{edu.year}}</td>
+                    </tr>
+                    <tr *ngIf="edu.gpa">
+                      <td class="icon-cell"><i class="fas fa-star"></i></td>
+                      <td><strong>GPA:</strong></td>
+                      <td>{{edu.gpa}}</td>
+                    </tr>
+                    <tr *ngIf="edu.major">
+                      <td class="icon-cell"><i class="fas fa-book"></i></td>
+                      <td><strong>Major:</strong></td>
+                      <td>{{edu.major}}</td>
+                    </tr>
+                    <tr *ngIf="edu.minor">
+                      <td class="icon-cell"><i class="fas fa-book-open"></i></td>
+                      <td><strong>Minor:</strong></td>
+                      <td>{{edu.minor}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="achievements" *ngIf="edu.achievements?.length">
+                  <h4><i class="fas fa-award"></i> Achievements</h4>
+                  <ul class="achievement-list">
+                    <li *ngFor="let achievement of edu.achievements">
+                      {{achievement}}
+                    </li>
+                  </ul>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <!-- Projects Section with Cards -->
+    <section class="projects-section" *ngIf="resumeData?.sectionVisibility?.['projects']">
+      <mat-card class="projects-card mat-elevation-z3">
+        <mat-card-header>
+          <mat-card-title>
+            <i class="fas fa-laptop-code"></i> Featured Projects
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="projects-grid">
+            <mat-card class="project-item-card mat-elevation-z2" *ngFor="let project of resumeData?.projects">
+              <mat-card-header>
+                <div mat-card-avatar>
+                  <i class="fas fa-project-diagram project-icon"></i>
+                </div>
+                <mat-card-title>{{project.name}}</mat-card-title>
+                <mat-card-subtitle>
+                  <span class="project-role">{{project.role}}</span>
+                  <span class="project-duration" *ngIf="project.duration">
+                    <i class="far fa-calendar-alt"></i> {{project.duration}}
+                  </span>
+                </mat-card-subtitle>
+              </mat-card-header>
+              
+              <mat-card-content>
+                <p class="project-description">{{project.description}}</p>
+                
+                <div class="project-highlights" *ngIf="project.highlights?.length">
+                  <h4><i class="fas fa-star"></i> Key Features</h4>
+                  <ul class="highlights-list">
+                    <li *ngFor="let highlight of project.highlights">
+                      {{highlight}}
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="project-challenges" *ngIf="project.challenges?.length">
+                  <h4><i class="fas fa-tasks"></i> Challenges & Solutions</h4>
+                  <table class="challenges-table">
+                    <tbody>
+                      <tr *ngFor="let challenge of project.challenges">
+                        <td class="icon-cell"><i class="fas fa-check-circle"></i></td>
+                        <td>{{challenge}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="tech-stack" *ngIf="project.technologies?.length">
+                  <h4><i class="fas fa-code"></i> Technologies Used</h4>
+                  <div class="tech-badges">
+                    <span class="tech-badge" *ngFor="let tech of project.technologies">{{tech}}</span>
+                  </div>
+                </div>
+
+                <div class="project-metrics" *ngIf="project.metrics?.length">
+                  <h4><i class="fas fa-chart-line"></i> Impact & Metrics</h4>
+                  <ul class="metrics-list">
+                    <li *ngFor="let metric of project.metrics">
+                      {{metric}}
+                    </li>
+                  </ul>
+                </div>
+              </mat-card-content>
+
+              <mat-card-actions align="end">
+                <a mat-stroked-button color="primary" [href]="project.demoUrl" target="_blank" *ngIf="project.demoUrl">
+                  <i class="fas fa-external-link-alt"></i> Live Demo
+                </a>
+                <a mat-stroked-button color="primary" [href]="project.sourceUrl" target="_blank" *ngIf="project.sourceUrl">
+                  <i class="fab fa-github"></i> Source Code
+                </a>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+  <!-- Social Links -->
+  <section class="social-section" *ngIf="resumeData.socialLinks?.length">
+    <mat-card class="social-card mat-elevation-z3">
+      <mat-card-header>
+        <mat-card-title>
+          <i class="fas fa-share-alt"></i> Connect
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="social-links">
+          <a mat-button *ngFor="let link of resumeData.socialLinks" 
+             [href]="link.url" 
+             target="_blank"
+             class="social-link">
+            <i [class]="getSocialIcon(link.platform)"></i>
+            <span>{{link.platform}}</span>
+          </a>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </section>
+</div>

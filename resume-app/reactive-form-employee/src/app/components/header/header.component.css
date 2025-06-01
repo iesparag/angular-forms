@@ -1,0 +1,112 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  height: 64px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.logo-icon {
+  color: var(--mat-primary-color);
+  transform: scale(1.2);
+  margin-right: 4px;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+  letter-spacing: -0.5px;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+}
+
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 24px;
+  transition: background 0.2s;
+}
+
+.user-button:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+.user-button mat-icon {
+  font-size: 32px;
+  height: 32px;
+  width: 32px;
+  color: #666;
+}
+
+.user-name {
+  font-size: 14px;
+  color: #333;
+  margin-right: 4px;
+}
+
+::ng-deep .user-menu {
+  min-width: 280px;
+  max-width: 320px;
+  margin-top: 12px;
+}
+
+::ng-deep .menu-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+::ng-deep .menu-header .avatar {
+  font-size: 40px;
+  height: 40px;
+  width: 40px;
+  color: #666;
+}
+
+::ng-deep .user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+::ng-deep .user-info .name {
+  font-weight: 500;
+  color: #333;
+}
+
+::ng-deep .user-info .email {
+  font-size: 12px;
+  color: #666;
+}
+
+::ng-deep .mat-divider {
+  margin: 8px 0;
+}
+
+::ng-deep .logout-item {
+  color: #d32f2f;
+}
+
+::ng-deep .logout-item mat-icon {
+  color: #d32f2f;
+}

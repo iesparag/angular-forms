@@ -1,0 +1,66 @@
+<div class="email-compose">
+  <!-- Header -->
+  <div class="compose-header">
+    <span class="header-text">Send Resume via Email</span>
+    <button mat-icon-button (click)="onCancel()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Email Form -->
+  <div class="compose-body">
+    <mat-form-field appearance="outline" class="recipient-field">
+      <mat-label>To</mat-label>
+      <input matInput [(ngModel)]="emailData.to" placeholder="recipient@example.com">
+      <mat-icon matSuffix>mail</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="subject-field">
+      <mat-label>Subject</mat-label>
+      <input matInput [(ngModel)]="emailData.subject">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="message-field">
+      <textarea matInput [(ngModel)]="emailData.message" rows="12" placeholder="Write your message here..."></textarea>
+    </mat-form-field>
+
+    <!-- Attachments -->
+    <div class="attachments-section" *ngIf="emailData.attachments.length > 0">
+      <div class="attachments-header">
+        <mat-icon>attach_file</mat-icon>
+        <span>Attachments</span>
+      </div>
+      <div class="attachments-list">
+        <div class="attachment-item" *ngFor="let file of emailData.attachments; let i = index">
+          <span class="file-name">
+            <mat-icon>description</mat-icon>
+            {{file.name}}
+          </span>
+          <button mat-icon-button (click)="removeAttachment(i)" class="remove-button">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="compose-footer">
+    <div class="footer-actions">
+      <div class="left-actions">
+        <button mat-raised-button color="primary" (click)="onSend()" class="send-button">
+          <mat-icon>send</mat-icon>
+          Send
+        </button>
+        <input type="file" #fileInput style="display: none" (change)="onAttachFile($event)" multiple>
+        <button mat-stroked-button (click)="fileInput.click()" class="attach-button">
+          <mat-icon>attach_file</mat-icon>
+          Attach
+        </button>
+      </div>
+      <button mat-button (click)="onCancel()" class="discard-button">
+        Discard
+      </button>
+    </div>
+  </div>
+</div>

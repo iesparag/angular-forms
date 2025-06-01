@@ -29,6 +29,9 @@
     
 
       <div class="right-actions">
+        <button class="icon-button" (click)="openEmailCompose()" title="Send via Email">
+          <i class="fas fa-envelope"></i>
+        </button>
         <button class="icon-button" (click)="submitForm()" title="Save Resume">
           <i class="fas fa-save"></i>
         </button>
@@ -68,15 +71,8 @@
           [resumeData]="resumeData">
         </app-professional-template>
 
-        <!-- Executive Template -->
-        <app-executive-template 
-          *ngIf="templateType === 'executive'" 
-          [resumeData]="resumeData">
-        </app-executive-template>
-        <app-technical-template *ngIf="templateType === 'technical'" [resumeData]="resumeData"></app-technical-template>
-        <app-compact-template *ngIf="templateType === 'compact'" [resumeData]="resumeData"></app-compact-template>
-        <app-rating-template *ngIf="templateType === 'rating'" [resumeData]="resumeData"></app-rating-template>
         <app-timeline-template *ngIf="templateType === 'timeline'" [resumeData]="resumeData"></app-timeline-template>
+        <app-premium-template *ngIf="templateType === 'premium'" [resumeData]="resumeData"></app-premium-template>
       </div>
     </div>
 

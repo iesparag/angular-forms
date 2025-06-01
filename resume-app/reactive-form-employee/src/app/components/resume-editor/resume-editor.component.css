@@ -287,7 +287,67 @@ app-header {
   transform-origin: top center;
 }
 
-/* Page break rules */
+/* Page break rules for PDF generation */
+
+/* Prevent breaks inside sections */
+.section {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Keep headings with their content */
+h1, h2, h3, h4, h5, h6 {
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+/* Keep list items together */
+li {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Project sections should try to stay together */
+.project-item {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Experience sections should try to stay together */
+.experience-item {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Education sections should try to stay together */
+.education-item {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* Ensure proper margins and spacing in PDF */
+@media print {
+  .preview-container {
+    margin: 0;
+    padding: 15mm;
+    width: 210mm;
+    min-height: 297mm;
+    page-break-after: always;
+  }
+}
+
+/* Link styles */
+.preview-container a {
+  color: #0066cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.preview-container a:hover {
+  color: #003366;
+}
+
+/* Control content flow */
 .section-education,
 .section-experience,
 .section-projects {

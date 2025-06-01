@@ -1,9 +1,14 @@
-import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { EmailComposeComponent } from '../email-compose/email-compose.component';
+import { HeaderComponent } from '../header/header.component';
+import { RouterLink } from '@angular/router';
 import { ResumeListComponent } from '../resume-list/resume-list.component';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SaveResumeModalComponent } from '../save-resume-modal/save-resume-modal.component';
 import { ResumeService } from '../../services/resume.service';
-import { HeaderComponent } from '../shared/header/header.component';
 import { AuthService } from '../../services/auth.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -16,28 +21,29 @@ import { ProfessionalTemplateComponent } from '../resume-templates/professional-
 import { ExecutiveTemplateComponent } from '../resume-templates/executive-template/executive-template.component';
 import { TechnicalTemplateComponent } from '../resume-templates/technical-template/technical-template.component';
 import { CompactTemplateComponent } from '../resume-templates/compact-template/compact-template.component';
-import { RatingTemplateComponent } from '../resume-templates/rating-template/rating-template.component';
 import { TimelineTemplateComponent } from '../resume-templates/timeline-template/timeline-template.component';
+import { PremiumTemplateComponent } from '../resume-templates/premium-template/premium-template.component';
+import { RatingTemplateComponent } from '../resume-templates/rating-template/rating-template.component';
 
 @Component({
   selector: 'app-resume-editor',
   standalone: true,
   imports: [
     CommonModule,
-    HeaderComponent,
     ReactiveFormsModule,
+    MatDialogModule,
+    MatIconModule,
+    MatButtonModule,
+    ResumeListComponent,
     RouterLink,
+    HeaderComponent,
     ModernTemplateComponent,
     MinimalTemplateComponent,
     CreativeTemplateComponent,
     ProfessionalTemplateComponent,
-    ExecutiveTemplateComponent,
-    TechnicalTemplateComponent,
-    CompactTemplateComponent,
-    RatingTemplateComponent,
     TimelineTemplateComponent,
-    SaveResumeModalComponent,
-    ResumeListComponent
+    PremiumTemplateComponent,
+    SaveResumeModalComponent
   ],
   templateUrl: './resume-editor.component.html',
   styleUrls: ['./resume-editor.component.css']
@@ -49,11 +55,8 @@ export class ResumeEditorComponent implements OnInit {
     { id: 'minimal', name: 'Minimal', icon: 'fas fa-minus-square' },
     { id: 'creative', name: 'Creative', icon: 'fas fa-paint-brush' },
     { id: 'professional', name: 'Professional', icon: 'fas fa-briefcase' },
-    { id: 'executive', name: 'Executive', icon: 'fas fa-user-tie' },
-    { id: 'technical', name: 'Technical', icon: 'fas fa-code' },
-    { id: 'compact', name: 'Compact', icon: 'fas fa-compress' },
-    { id: 'rating', name: 'Rating', icon: 'fas fa-star' },
-    { id: 'timeline', name: 'Timeline', icon: 'fas fa-stream' }
+    { id: 'timeline', name: 'Timeline', icon: 'fas fa-stream' },
+    { id: 'premium', name: 'Premium', icon: 'fas fa-gem' }
   ];
   @ViewChild('previewContainer') previewContainer!: ElementRef;
   @ViewChild('resumeList') resumeList!: ResumeListComponent;
@@ -89,6 +92,7 @@ export class ResumeEditorComponent implements OnInit {
   ];
 
   constructor(
+    private dialog: MatDialog,
     private fb: FormBuilder,
     private resumeService: ResumeService,
     private route: ActivatedRoute,
@@ -102,7 +106,7 @@ export class ResumeEditorComponent implements OnInit {
     // Get template type from route parameter
     this.route.paramMap.subscribe(params => {
       const type = params.get('type');
-      if (type && ['modern', 'minimal', 'creative', 'professional', 'executive', 'technical', 'compact', 'rating', 'timeline'].includes(type)) {
+      if (type && ['modern', 'minimal', 'creative', 'professional', 'timeline', 'premium'].includes(type)) {
         this.templateType = type;
       }
     });
@@ -678,123 +682,135 @@ export class ResumeEditorComponent implements OnInit {
     }
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const templateSelector = document.querySelector('.template-selector');
-    if (templateSelector && !templateSelector.contains(event.target as Node)) {
-      this.showTemplateDropdown = false;
-    }
+  openEmailCompose() {
+    const dialogRef = this.dialog.open(EmailComposeComponent, {
+      width: '600px',
+      height: '80vh',
+      maxHeight: '800px',
+      position: { bottom: '24px', right: '24px' },
+      panelClass: 'email-compose-dialog',
+      data: { resumeData: this.resumeData }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // TODO: Implement email sending logic
+        console.log('Email data:', result);
+      }
+    });
   }
 
   // Save as PDF using jsPDF and html2canvas
-  saveAsPdf() {
+  async saveAsPdf() {
     if (!this.previewContainer || this.isGeneratingPdf) {
       return;
     }
-    
     this.isGeneratingPdf = true;
-    
-    // Get the resume name for the filename
-    const resumeName = this.resumeData?.personalDetails?.name || 'Resume';
-    const fileName = `${resumeName.replace(/\s+/g, '_')}_${this.templateType}_resume.pdf`;
-    
+
     // Create a loading indicator
     const loadingIndicator = document.createElement('div');
     loadingIndicator.className = 'pdf-loading-indicator';
     loadingIndicator.innerHTML = '<div class="spinner"></div><p>Generating PDF...</p>';
     document.body.appendChild(loadingIndicator);
-    
-    // Get the element to convert
-    const element = this.previewContainer.nativeElement;
-    
-    // Use setTimeout to allow the UI to update with the loading indicator
-    setTimeout(() => {
-      // Calculate dimensions
-      const a4Width = 210; // A4 width in mm
-      const a4Height = 297; // A4 height in mm
-      const padding = 15; // Padding in mm (matching CSS)
-      
-      // Use html2canvas to capture the element
-      html2canvas(element, {
-        scale: 2, // Higher scale for better quality
-        useCORS: true, // Enable CORS for images
-        allowTaint: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        width: element.offsetWidth,
-        height: element.offsetHeight,
-        x: 0,
-        y: 0,
-        scrollX: window.scrollX,
-        scrollY: window.scrollY,
-        windowWidth: document.documentElement.offsetWidth,
-        windowHeight: document.documentElement.offsetHeight
-      }).then(canvas => {
-        // Create PDF with A4 size
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4',
-          compress: true
-        });
 
-        // Calculate dimensions to fit content properly
-        const margin = 10; // 10mm margin
-        const pdfWidth = 210; // A4 width in mm
-        const pdfHeight = 297; // A4 height in mm
-        const contentWidth = pdfWidth - (2 * margin);
-        const contentHeight = pdfHeight - (2 * margin);
-        
-        // Calculate scaling to maintain aspect ratio
-        const imgWidth = contentWidth;
-        const imgHeight = (canvas.height * contentWidth) / canvas.width;
-        
-        // Position for first page
-        let heightLeft = imgHeight;
-        let position = margin; // Start from top margin
-        
-        // Add image to PDF (first page)
-        pdf.addImage(
-          canvas.toDataURL('image/jpeg', 1.0),
-          'JPEG',
-          margin,
-          position,
-          imgWidth,
-          imgHeight,
-          '',
-          'FAST'
-        );
-        heightLeft -= (contentHeight);
+    try {
+      const element = this.previewContainer.nativeElement;
 
-        // Add new pages if the content is longer than one page
-        while (heightLeft > 0) {
-          pdf.addPage();
-          position = heightLeft - imgHeight + margin;
-          pdf.addImage(
-            canvas.toDataURL('image/jpeg', 1.0),
-            'JPEG',
-            margin,
-            position,
-            imgWidth,
-            imgHeight,
-            '',
-            'FAST'
-          );
-          heightLeft -= contentHeight;
+      // Clone the element and prepare it for PDF
+      const clone = element.cloneNode(true) as HTMLElement;
+      clone.style.position = 'absolute';
+      clone.style.left = '-9999px';
+      clone.style.top = '0';
+      clone.style.width = '210mm';
+      clone.style.padding = '10mm';
+      clone.style.backgroundColor = '#FFFFFF';
+      clone.style.color = '#000000';
+      clone.style.fontSize = '14px';
+      clone.style.lineHeight = '1.4';
+      document.body.appendChild(clone);
+
+      // Apply styles to ensure crisp text
+      const allText = clone.getElementsByTagName('*');
+      for (let i = 0; i < allText.length; i++) {
+        const el = allText[i] as HTMLElement;
+        el.style.color = '#000000';
+        if (el.classList.contains('section-heading')) {
+          el.style.color = '#000000';
+          el.style.borderBottom = '1px solid #000000';
         }
+      }
 
-        // Save the PDF
-        pdf.save(fileName);
-        
-        // Clean up
-        document.body.removeChild(loadingIndicator);
-        this.isGeneratingPdf = false;
-      }).catch(error => {
-        console.error('Error generating PDF:', error);
-        alert('Failed to generate PDF. Please try again.');
-        document.body.removeChild(loadingIndicator);
-        this.isGeneratingPdf = false;
+      // Let the clone render and get its height
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const contentHeight = clone.scrollHeight;
+
+      // Calculate PDF dimensions
+      const pdfWidth = 210; // A4 width in mm
+      const contentWidthMM = pdfWidth - 20; // 10mm padding on each side
+      const scaleFactor = contentWidthMM / (clone.offsetWidth - 20); // Account for padding
+      const pdfHeight = (contentHeight * scaleFactor) + 20; // Add padding
+
+      // Create PDF with custom height
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [pdfWidth, pdfHeight]
       });
-    }, 100);
+
+      // Capture the content
+      const canvas = await html2canvas(clone, {
+        scale: 3, // Increased for better quality
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#FFFFFF',
+        width: clone.offsetWidth,
+        height: contentHeight,
+        windowWidth: clone.offsetWidth,
+        windowHeight: contentHeight,
+        logging: false,
+        imageTimeout: 0,
+        removeContainer: true
+      });
+
+      // Add image to PDF
+      pdf.addImage(
+        canvas.toDataURL('image/jpeg', 1.0),
+        'JPEG',
+        0,
+        0,
+        pdfWidth,
+        pdfHeight,
+        '',
+        'FAST'
+      );
+
+      // Add clickable links
+      const links = clone.querySelectorAll('a');
+      links.forEach((link: HTMLAnchorElement) => {
+        const rect = link.getBoundingClientRect();
+        const cloneRect = clone.getBoundingClientRect();
+        
+        // Calculate position in PDF coordinates
+        const x = (rect.left - cloneRect.left) * (pdfWidth / cloneRect.width);
+        const y = (rect.top - cloneRect.top) * (pdfHeight / cloneRect.height);
+        const width = rect.width * (pdfWidth / cloneRect.width);
+        const height = rect.height * (pdfHeight / cloneRect.height);
+
+        pdf.link(x, y, width, height, { url: link.href });
+      });
+
+      // Save PDF
+      pdf.save('resume.pdf');
+
+      // Clean up
+      document.body.removeChild(clone);
+      document.body.removeChild(loadingIndicator);
+      this.isGeneratingPdf = false;
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+      document.body.removeChild(loadingIndicator);
+      this.isGeneratingPdf = false;
+    }
   }
 }

@@ -93,16 +93,36 @@
   flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
 .social-link {
   color: #2196F3;
   text-decoration: none;
-  padding: 5px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9em;
+  padding: 4px 8px;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
 }
 
 .social-link:hover {
   background-color: #e3f2fd;
+  border-color: #2196F3;
+  transform: translateY(-1px);
+}
+
+.social-link i {
+  font-size: 1.1em;
+  color: #2196F3;
 }
 
 /* Section Styles */

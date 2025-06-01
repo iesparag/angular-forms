@@ -21,7 +21,8 @@
       <div class="social-links">
         <ng-container *ngFor="let link of resumeData?.personalDetails?.socialLinks">
           <a [href]="link.url" target="_blank" class="social-link">
-            <i class="fa-solid fa-link"></i> {{link.platform}}
+            <i [class]="getSocialIcon(link.platform)"></i>
+            {{link.url}}
           </a>
         </ng-container>
       </div>
