@@ -17,11 +17,14 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV,
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+  APP_NAME: process.env.APP_NAME || 'Resume Builder'
 };
 
 // Validate required environment variables
-const requiredEnvVars = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'SESSION_SECRET', 'JWT_SECRET'];
+const requiredEnvVars = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'SESSION_SECRET', 'JWT_SECRET', 'EMAIL_USER', 'EMAIL_PASSWORD'];
 for (const envVar of requiredEnvVars) {
   if (!env[envVar]) {
     throw new Error(`Missing required environment variable: ${envVar}`);

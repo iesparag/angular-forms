@@ -682,26 +682,127 @@ export class ResumeEditorComponent implements OnInit {
     }
   }
 
-  openEmailCompose() {
-    const dialogRef = this.dialog.open(EmailComposeComponent, {
-      width: '600px',
-      height: '80vh',
-      maxHeight: '800px',
-      position: { bottom: '24px', right: '24px' },
-      panelClass: 'email-compose-dialog',
-      data: { resumeData: this.resumeData }
-    });
+  async openEmailCompose() {
+    if (!this.previewContainer) return;
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        // TODO: Implement email sending logic
-        console.log('Email data:', result);
-      }
-    });
+    // Generate PDF
+    const element = this.previewContainer.nativeElement;
+    const clone = element.cloneNode(true) as HTMLElement;
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.width = '210mm';
+    clone.style.height = 'auto';
+    clone.style.padding = '10mm';
+    clone.style.backgroundColor = '#FFFFFF';
+    clone.style.overflow = 'visible';
+    clone.id = 'resume-preview-clone';
+    document.body.appendChild(clone);
+
+    try {
+      // Prepare content
+      const links = clone.getElementsByTagName('a');
+      Array.from(links).forEach(link => {
+        link.style.color = '#0000FF';
+        link.style.textDecoration = 'underline';
+      });
+
+      // Apply font styles for better rendering
+      const style = document.createElement('style');
+      style.textContent = `
+        #resume-preview-clone {
+          font-family: Arial, sans-serif !important;
+          color: black !important;
+        }
+        #resume-preview-clone * {
+          font-family: inherit !important;
+        }
+      `;
+      clone.appendChild(style);
+
+      // Convert to canvas with optimal settings
+      const canvas = await html2canvas(clone, {
+        scale: 3,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#FFFFFF',
+        logging: false,
+        imageTimeout: 0,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById('resume-preview-clone');
+          if (clonedElement) {
+            clonedElement.style.transform = 'none';
+            clonedElement.style.zoom = '1';
+          }
+        }
+      });
+
+      // Calculate dimensions for single-page dynamic height PDF
+      const pageWidth = 210; // A4 width in mm
+      const contentHeight = clone.scrollHeight;
+      const contentWidth = clone.scrollWidth;
+      const scaleFactor = pageWidth / contentWidth;
+      const pdfHeight = contentHeight * scaleFactor;
+
+      // Create PDF with dynamic height as single page
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [pageWidth, pdfHeight]
+        // Using default compression = true
+      });
+
+      // Convert canvas to image data with high quality
+      const imgData = canvas.toDataURL('image/jpeg', 0.8);
+      console.log('Canvas dimensions:', { width: canvas.width, height: canvas.height });
+      console.log('Image data size:', (imgData.length * 0.75) / (1024 * 1024), 'MB');
+      
+      // Add image to fill the entire dynamic height page
+      pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight, undefined, 'FAST');
+
+      // Add clickable links
+      Array.from(links).forEach(link => {
+        const rect = link.getBoundingClientRect();
+        const containerRect = clone.getBoundingClientRect();
+        
+        const x = (rect.left - containerRect.left) * (210 / containerRect.width);
+        const y = (rect.top - containerRect.top) * (297 / containerRect.height);
+        const width = rect.width * (210 / containerRect.width);
+        const height = rect.height * (297 / containerRect.height);
+
+        pdf.link(x, y, width, height, { url: link.href });
+      });
+
+      // Get PDF as data URI string
+      const pdfDataUri = pdf.output('datauristring');
+      console.log('PDF data URI size:', (pdfDataUri.length * 0.75) / (1024 * 1024), 'MB');
+      const name = this.resumeForm.get('personalDetails.name')?.value || 'Resume';
+      const fileName = `${name}.pdf`;
+
+      // Open email compose with PDF attachment as data URI
+      const dialogRef = this.dialog.open(EmailComposeComponent, {
+        width: '600px',
+        maxHeight: '80vh',
+        data: {
+          attachments: [{
+            name: fileName,
+            data: pdfDataUri,
+            type: 'application/pdf'
+          }]
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          console.log('Email sent with attachment:', result);
+        }
+      });
+    } finally {
+      document.body.removeChild(clone);
+    }
   }
 
   // Save as PDF using jsPDF and html2canvas
-  async saveAsPdf() {
+  async saveAsPdf(): Promise<void> {
     if (!this.previewContainer || this.isGeneratingPdf) {
       return;
     }
@@ -759,7 +860,7 @@ export class ResumeEditorComponent implements OnInit {
 
       // Capture the content
       const canvas = await html2canvas(clone, {
-        scale: 3, // Increased for better quality
+        scale: 3, // Reduced scale for smaller file size while maintaining quality
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#FFFFFF',
@@ -772,9 +873,10 @@ export class ResumeEditorComponent implements OnInit {
         removeContainer: true
       });
 
-      // Add image to PDF
+      // Add image to PDF with compression
+      const imageData = canvas.toDataURL('image/jpeg', 0.8); // Reduced quality for smaller size
       pdf.addImage(
-        canvas.toDataURL('image/jpeg', 1.0),
+        imageData,
         'JPEG',
         0,
         0,
