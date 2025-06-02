@@ -1,24 +1,26 @@
-import { Component, Inject, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { HttpEventType, HttpResponse } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { FormControl } from '@angular/forms';
-import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
-import { MatChipEditedEvent, MatChipGrid } from '@angular/material/chips';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+import { Component, Inject, OnDestroy, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { MatButtonModule } from '@angular/material/button';
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule, MatSelectChange } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatChipsModule, MatChipInputEvent, MatChipEditedEvent, MatChipGrid } from '@angular/material/chips';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpClientModule, HttpClient, HttpEventType, HttpResponse } from '@angular/common/http';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { firstValueFrom } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { EmailService } from '../../services/email.service';
+import { SheetService } from '../../services/sheet.service';
+import { Sheet } from '../../models/sheet.model';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 interface Attachment {
   name: string;
@@ -29,32 +31,38 @@ interface Attachment {
 @Component({
   selector: 'app-email-compose',
   templateUrl: './email-compose.component.html',
-  styleUrls: ['./email-compose.component.css'],
+  styleUrls: ['./email-compose.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatSnackBarModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+    MatOptionModule,
     MatChipsModule,
-    HttpClientModule,
-    MatProgressSpinnerModule
+    MatSnackBarModule,
+    HttpClientModule
   ]
 })
-export class EmailComposeComponent implements OnDestroy {
+export class EmailComposeComponent implements OnInit, OnDestroy {
+  sheets: Sheet[] = [];
+  selectedSheetId: string | null = null;
+  emailList: string[] = [];
   emailData = {
+    to: '',
     subject: '',
     message: '',
     attachments: [] as Attachment[]
   }
 
   emailCtrl = new FormControl('');
-  emailList: string[] = [];
   separatorKeysCodes: number[] = [ENTER, COMMA];
   
   @ViewChild('emailInput') emailInput!: ElementRef<HTMLInputElement>;
@@ -83,18 +91,99 @@ export class EmailComposeComponent implements OnDestroy {
   }
 
   constructor(
+    private sheetService: SheetService,
     public dialogRef: MatDialogRef<EmailComposeComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private snackBar: MatSnackBar,
+    private emailService: EmailService,
+    private cdr: ChangeDetectorRef,
     private http: HttpClient
   ) {
-    if (data?.resumeData) {
-      // Pre-fill message with resume data if provided
-      this.emailData.message = this.generateEmailContent(data.resumeData);
+    this.initializeData();
+    // Create some test sheets if none exist
+    this.createTestSheetsIfNeeded();
+  }
+
+  private async createTestSheetsIfNeeded() {
+    // Get fresh sheets from service
+    const sheets = await firstValueFrom(this.sheetService.getSheets());
+    
+    // Create new test sheets with guaranteed unique IDs
+    // Add a small delay between creation to ensure uniqueness
+    if (sheets.length === 0) {
+      try {
+        // First sheet
+        const sheet1 = await firstValueFrom(this.sheetService.createSheet('Marketing Team', ['marketing@example.com', 'sales@example.com']));
+        console.log('Created Marketing Team sheet with ID:', sheet1.id);
+        
+        // Small delay
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
+        // Second sheet
+        const sheet2 = await firstValueFrom(this.sheetService.createSheet('Development Team', ['dev@example.com', 'tech@example.com']));
+        console.log('Created Development Team sheet with ID:', sheet2.id);
+        
+        // Small delay
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
+        // Third sheet
+        const sheet3 = await firstValueFrom(this.sheetService.createSheet('Management', ['manager@example.com', 'director@example.com']));
+        console.log('Created Management sheet with ID:', sheet3.id);
+      } catch (error) {
+        console.error('Error creating test sheets:', error);
+      }
     }
-    if (data?.attachments) {
+  }
+
+  ngOnInit(): void {
+    this.loadSheets();
+  }
+
+  private loadSheets(): void {
+    this.sheetService.getSheets().subscribe(sheets => {
+      this.sheets = sheets;
+      console.log('Loaded sheets:', sheets); // Debug log
+      this.cdr.detectChanges();
+    });
+  }
+
+  onSheetSelect(event: MatSelectChange): void {
+    const sheetId = event.value;
+    // Try to find the sheet in our local array first (should always work)
+    const selectedSheet = this.sheets.find(s => s.id === sheetId);
+    
+    if (selectedSheet && selectedSheet.emails && selectedSheet.emails.length > 0) {
+      // Set the selected sheet ID
+      this.selectedSheetId = sheetId;
+      
+      // Create a new array for the email list (this ensures Angular detects the change)
+      this.emailList = [...selectedSheet.emails];
+      
+      // Update emailData.to field for backward compatibility
+      this.emailData.to = selectedSheet.emails.join(', ');
+      
+      console.log('Sheet selected:', selectedSheet.name);
+      console.log('Emails loaded:', this.emailList);
+      
+      // Force change detection to update the UI
+      this.cdr.detectChanges();
+    } else {
+      console.error('Selected sheet has no emails or was not found');
+      // Clear emails if sheet has no emails
+      this.emailList = [];
+      this.emailData.to = '';
+      this.cdr.detectChanges();
+    }
+  }
+
+  private initializeData(): void {
+    if (this.data?.resumeData) {
+      // Pre-fill message with resume data if provided
+      this.emailData.message = this.generateEmailContent(this.data.resumeData);
+    }
+    if (this.data?.attachments) {
       // Process attachments from dialog data
-      this.processAttachments(data.attachments);
+      this.processAttachments(this.data.attachments);
     }
     // Generate random message components
     const subject = this.subjectTemplates[Math.floor(Math.random() * this.subjectTemplates.length)];

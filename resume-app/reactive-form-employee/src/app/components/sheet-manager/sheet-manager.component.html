@@ -1,0 +1,111 @@
+<div class="sheet-manager-container">
+  <!-- Loading Spinner -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Processing...</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="sheet-header">
+    <h2 class="sheet-title">{{ editMode ? 'Edit Sheet' : 'Create New Sheet' }}</h2>
+  </div>
+  
+  <div class="sheet-content">
+    <!-- Form Section -->
+    <div class="sheet-form-section">
+      <form [formGroup]="sheetForm" (ngSubmit)="onSubmit()" class="sheet-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Sheet Name</mat-label>
+          <input matInput formControlName="name" placeholder="Enter sheet name" required>
+          <mat-error *ngIf="sheetForm.get('name')?.invalid && sheetForm.get('name')?.touched">
+            Sheet name is required
+          </mat-error>
+          <mat-hint>Give your email sheet a descriptive name</mat-hint>
+        </mat-form-field>
+
+        <!-- Email Chips -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email Addresses</mat-label>
+          <mat-chip-grid #chipGrid aria-label="Email selection">
+            <mat-chip-row *ngFor="let email of emailList"
+                        (removed)="removeEmail(email)">
+              {{ email }}
+              <button matChipRemove [attr.aria-label]="'remove ' + email">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+            <input placeholder="Add email..."
+                  [matChipInputFor]="chipGrid"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addEmail($event)"
+                  formControlName="emails">
+          </mat-chip-grid>
+          <mat-hint>Press Enter or comma to add email</mat-hint>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            [disabled]="sheetForm.invalid">
+            <mat-icon>{{ editMode ? 'save' : 'add' }}</mat-icon>
+            {{ editMode ? 'Update' : 'Create' }} Sheet
+          </button>
+          <button 
+            mat-button 
+            type="button" 
+            (click)="resetForm()" 
+            *ngIf="editMode">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Sheet List Section -->
+    <div class="sheet-list-section">
+      <h3 class="section-title">Your Sheets</h3>
+      
+      <div class="sheets-empty" *ngIf="sheets.length === 0 && !loading">
+        <mat-icon class="empty-icon">list</mat-icon>
+        <p>No sheets created yet. Create your first email sheet above.</p>
+      </div>
+
+      <div class="sheet-card" *ngFor="let sheet of sheets">
+        <div class="sheet-card-content">
+          <div class="sheet-info">
+            <h4 class="sheet-name">{{ sheet.name }}</h4>
+            <div class="email-chips">
+              <mat-chip-set>
+                <mat-chip *ngFor="let email of sheet.emails.slice(0, 3)" color="primary" selected>{{ email }}</mat-chip>
+                <mat-chip *ngIf="sheet.emails.length > 3" color="accent" selected>+{{ sheet.emails.length - 3 }} more</mat-chip>
+              </mat-chip-set>
+            </div>
+            <div class="sheet-meta">
+              <span class="email-count">
+                <mat-icon class="meta-icon">email</mat-icon>
+                {{ sheet.emails.length }} emails
+              </span>
+              <span class="update-time">
+                <mat-icon class="meta-icon">schedule</mat-icon>
+                {{ sheet.updatedAt | date }}
+              </span>
+            </div>
+          </div>
+          <div class="sheet-actions">
+            <button mat-icon-button color="primary" (click)="editSheet(sheet)" matTooltip="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteSheet(sheet.id)" matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

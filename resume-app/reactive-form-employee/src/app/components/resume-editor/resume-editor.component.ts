@@ -3,6 +3,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { EmailComposeComponent } from '../email-compose/email-compose.component';
+import { SheetManagerComponent } from '../sheet-manager/sheet-manager.component';
 import { HeaderComponent } from '../header/header.component';
 import { RouterLink } from '@angular/router';
 import { ResumeListComponent } from '../resume-list/resume-list.component';
@@ -43,8 +44,8 @@ import { RatingTemplateComponent } from '../resume-templates/rating-template/rat
     ProfessionalTemplateComponent,
     TimelineTemplateComponent,
     PremiumTemplateComponent,
-    SaveResumeModalComponent
-  ],
+    SaveResumeModalComponent,
+    ],
   templateUrl: './resume-editor.component.html',
   styleUrls: ['./resume-editor.component.css']
 })
@@ -674,6 +675,22 @@ export class ResumeEditorComponent implements OnInit {
 
   toggleTemplateDropdown() {
     this.showTemplateDropdown = !this.showTemplateDropdown;
+  }
+  
+  /**
+   * Opens the Sheet Manager dialog to manage email sheets
+   */
+  openSheetManager() {
+    const dialogRef = this.dialog.open(SheetManagerComponent, {
+      width: '800px',
+      maxHeight: '80vh',
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      // Handle any actions after sheet manager is closed if needed
+      console.log('Sheet manager closed');
+    });
   }
 
   toggleResumeList() {

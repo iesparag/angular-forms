@@ -9,6 +9,16 @@
 
   <!-- Email Form -->
   <div class="compose-body">
+    <!-- Sheet Selection -->
+    <mat-form-field appearance="outline" class="sheet-field" *ngIf="sheets.length > 0">
+      <mat-label>Select Email Sheet</mat-label>
+      <mat-select [(ngModel)]="selectedSheetId" (selectionChange)="onSheetSelect($event)">
+        <mat-option *ngFor="let sheet of sheets" [value]="sheet.id">
+          {{ sheet.name }} ({{ sheet.emails.length }} emails)
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <mat-form-field appearance="outline" class="recipient-field">
       <mat-label>To</mat-label>
       <mat-chip-grid #chipList>

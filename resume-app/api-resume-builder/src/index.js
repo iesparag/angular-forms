@@ -8,6 +8,7 @@ import connectDB from './config/database.js';
 import userRoutes from './routes/userRoutes.js';
 import resumeRoutes from './routes/resumeRoutes.js';
 import emailRoutes from './routes/emailRoutes.js';
+import sheetRoutes from './routes/sheet.routes.js';
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use(passport.session());
 app.use('/api/users', userRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/email', emailRoutes);
+app.use('/api/sheets', sheetRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
