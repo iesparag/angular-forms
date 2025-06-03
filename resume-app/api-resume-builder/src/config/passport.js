@@ -9,7 +9,7 @@ passport.use(
     {
       clientID: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'http://localhost:5000/api/users/auth/google/callback',
+      callbackURL: 'https://angular-forms-bb1l.onrender.com/api/users/auth/google/callback',
       passReqToCallback: true
     },
     async (req, accessToken, refreshToken, profile, done) => {

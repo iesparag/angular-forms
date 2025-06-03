@@ -28,7 +28,7 @@ router.get('/auth/google/callback',
     console.log('Generated token:', token);
 
     // Redirect to frontend with token
-    res.redirect(`http://localhost:4200/auth/google-callback?token=${token}&user=${JSON.stringify({
+    res.redirect(`https://resume-builder-by-pj.netlify.app/auth/google-callback?token=${token}&user=${JSON.stringify({
       _id: req.user._id,
       name: req.user.name,
       email: req.user.email

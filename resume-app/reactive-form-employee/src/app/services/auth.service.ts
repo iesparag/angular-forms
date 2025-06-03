@@ -16,7 +16,7 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/users';
+  private apiUrl = 'https://angular-forms-bb1l.onrender.com/api/users';
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
