@@ -49,6 +49,10 @@ export class HeaderComponent implements OnInit {
     return colors[index];
   }
 
+  navigateToHome() {
+    this.router.navigate(['/']);
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/']);

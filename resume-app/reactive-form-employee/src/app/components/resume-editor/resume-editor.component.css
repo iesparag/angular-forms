@@ -22,6 +22,7 @@ app-header {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin-top: 20px;
 }
 
 /* Editor header */

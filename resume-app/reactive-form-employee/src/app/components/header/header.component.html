@@ -1,5 +1,5 @@
 <header class="app-header">
-  <div class="logo-section">
+  <div class="logo-section" (click)="navigateToHome()">
     <div class="logo-icon">PJ</div>
     <span class="logo-text">Resume<span class="highlight">Builder</span></span>
   </div>
@@ -16,7 +16,7 @@
       </div>
       <i class="fas fa-chevron-right profile-arrow"></i>
     </div>
-    <mat-menu #userMenu="matMenu" class="user-menu">
+    <mat-menu  #userMenu="matMenu" class="user-menu">
       <button mat-menu-item>
         <i class="fas fa-user-edit"></i>
         <span>Edit Profile</span>

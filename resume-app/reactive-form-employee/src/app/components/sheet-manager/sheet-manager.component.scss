@@ -2,9 +2,10 @@
 .sheet-manager-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 80vh;
   position: relative;
-  
+  overflow: hidden;
+  max-width: 800px;
   .loading-overlay {
     position: absolute;
     top: 0;
@@ -56,6 +57,13 @@
   padding: 24px;
   overflow-y: auto;
   gap: 24px;
+  &::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+  
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .sheet-form-section {
@@ -121,6 +129,13 @@
   padding: 16px;
   max-height: 300px;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+    
+  }
+  -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .empty-state {

@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 interface Template {
   type: string;
   name: string;
+  image: string;
   description: string;
   category: string;
   tags: string[];
@@ -65,6 +66,7 @@ export class HomeComponent implements OnInit {
     { 
       type: 'modern', 
       name: 'Modern Template', 
+      image: 'assets/images/modern-template-preview.png',
       description: 'A clean, professional design with a modern layout',
       category: 'Modern',
       tags: ['Minimalist', 'Corporate'],
@@ -73,6 +75,7 @@ export class HomeComponent implements OnInit {
     { 
       type: 'minimal', 
       name: 'Minimal Template', 
+      image: 'assets/images/minimal-template-preview.png',
       description: 'A simple, elegant design that focuses on content',
       category: 'Simple',
       tags: ['Minimalist'],
@@ -80,7 +83,8 @@ export class HomeComponent implements OnInit {
     },
     { 
       type: 'creative', 
-      name: 'Creative Template', 
+      name: 'Creative Template',
+      image: 'assets/images/creative-template-preview.png', 
       description: 'Stand out with a unique and creative design',
       category: 'Creative',
       tags: ['Colorful', 'Innovative'],
@@ -89,6 +93,7 @@ export class HomeComponent implements OnInit {
     { 
       type: 'professional', 
       name: 'Professional Template', 
+      image: 'assets/images/professional-template-preview.png',
       description: 'A traditional format perfect for corporate applications',
       category: 'Professional',
       tags: ['Traditional', 'Corporate'],
@@ -97,6 +102,7 @@ export class HomeComponent implements OnInit {
     { 
       type: 'executive', 
       name: 'Executive Template', 
+      image: 'assets/images/executive-template-preview.png',
       description: 'A sophisticated design for senior professionals',
       category: 'Professional',
       tags: ['Executive', 'Traditional'],
@@ -105,6 +111,7 @@ export class HomeComponent implements OnInit {
     { 
       type: 'technical', 
       name: 'Technical Template', 
+      image: 'assets/images/technical-template-preview.png',
       description: 'Perfect for software engineers and IT professionals',
       category: 'Technical',
       tags: ['Corporate', 'Technical'],
@@ -113,6 +120,7 @@ export class HomeComponent implements OnInit {
     { 
       type: 'compact', 
       name: 'Compact Template', 
+      image: 'assets/images/compact-template-preview.png',
       description: 'A concise one-page format that fits more content',
       category: 'Simple',
       tags: ['Minimalist', 'Entry-Level'],
@@ -121,6 +129,7 @@ export class HomeComponent implements OnInit {
     { 
       type: 'rating', 
       name: 'Rating Template', 
+      image: 'assets/images/rating-template-preview.png',
       description: 'Showcase your skills with visual ratings and metrics',
       category: 'Technical',
       tags: ['Innovative', 'Technical'],
@@ -129,6 +138,7 @@ export class HomeComponent implements OnInit {
     { 
       type: 'timeline', 
       name: 'Timeline Template', 
+      image: 'assets/images/timeline-template-preview.png',
       description: 'Tell your career story with an interactive timeline',
       category: 'Creative',
       tags: ['Innovative', 'Startup'],
@@ -156,6 +166,8 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+   
+    
     this.filteredTemplates = [...this.templates];
     this.updatePagination();
     this.updateDisplayedTemplates();

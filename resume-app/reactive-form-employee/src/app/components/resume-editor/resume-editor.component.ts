@@ -45,7 +45,11 @@ import { RatingTemplateComponent } from '../resume-templates/rating-template/rat
     TimelineTemplateComponent,
     PremiumTemplateComponent,
     SaveResumeModalComponent,
-    ],
+    ExecutiveTemplateComponent,
+    TechnicalTemplateComponent,
+    CompactTemplateComponent,
+    RatingTemplateComponent
+],
   templateUrl: './resume-editor.component.html',
   styleUrls: ['./resume-editor.component.css']
 })
@@ -57,7 +61,11 @@ export class ResumeEditorComponent implements OnInit {
     { id: 'creative', name: 'Creative', icon: 'fas fa-paint-brush' },
     { id: 'professional', name: 'Professional', icon: 'fas fa-briefcase' },
     { id: 'timeline', name: 'Timeline', icon: 'fas fa-stream' },
-    { id: 'premium', name: 'Premium', icon: 'fas fa-gem' }
+    // { id: 'premium', name: 'Premium', icon: 'fas fa-gem' },
+    { id: 'executive', name: 'Executive', icon: 'fas fa-user-tie' },
+    { id: 'technical', name: 'Technical', icon: 'fas fa-laptop-code' },
+    { id: 'compact', name: 'Compact', icon: 'fas fa-compress' },
+    { id: 'rating', name: 'Rating', icon: 'fas fa-star' }
   ];
   @ViewChild('previewContainer') previewContainer!: ElementRef;
   @ViewChild('resumeList') resumeList!: ResumeListComponent;
@@ -107,7 +115,7 @@ export class ResumeEditorComponent implements OnInit {
     // Get template type from route parameter
     this.route.paramMap.subscribe(params => {
       const type = params.get('type');
-      if (type && ['modern', 'minimal', 'creative', 'professional', 'timeline', 'premium'].includes(type)) {
+      if (type && ['modern', 'minimal', 'creative', 'professional', 'timeline', 'executive', 'technical', 'compact', 'rating'].includes(type)) {
         this.templateType = type;
       }
     });

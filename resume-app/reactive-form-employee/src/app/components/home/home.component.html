@@ -137,7 +137,7 @@
 
         <div class="template-card" *ngFor="let template of displayedTemplates" (click)="selectTemplate(template.type)">
           <div class="template-preview" [class]="template.type + '-preview'">
-            <img src="assets/images/placeholder.png" [alt]="template.name" />
+            <img src="{{template.image}}" [alt]="template.name" />
           </div>
           <div class="template-info">
             <h3>{{template.name}}</h3>
