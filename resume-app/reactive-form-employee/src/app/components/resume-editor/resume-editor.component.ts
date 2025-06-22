@@ -632,34 +632,77 @@ export class ResumeEditorComponent implements OnInit {
       return;
     }
 
-    const educationArray = this.resumeForm.get('education') as FormArray;
-    const hasValidEducation = educationArray.length > 0 && educationArray.controls.some(control => !control.errors);
+    // Mark all fields as touched to trigger validation display
+    this.markFormGroupTouched(this.resumeForm);
 
+    // Check each section for validation errors
+    const errors: string[] = [];
+
+    // Check personal details
     const personalDetails = this.resumeForm.get('personalDetails');
-    if (!personalDetails) return;
-    
-    const socialLinksArray = personalDetails.get('socialLinks') as FormArray;
-    const hasValidSocialLink = socialLinksArray.length > 0 && socialLinksArray.controls.some(control => !control.errors);
-
-    if (this.resumeForm.valid && hasValidEducation && hasValidSocialLink) {
-      this.showSaveModal = true;
-    } else {
-      console.log('Form is invalid');
-      this.markFormGroupTouched(this.resumeForm);
-      
-      // Show validation errors
-      let errorMessage = 'Please fix the following errors:\n';
-      
-      if (!hasValidEducation) {
-        errorMessage += '- At least one valid education entry is required\n';
+    if (personalDetails?.invalid) {
+      if (personalDetails.get('name')?.errors?.['required']) {
+        errors.push('Name is required');
       }
-      
-      if (!hasValidSocialLink) {
-        errorMessage += '- At least one valid social link is required\n';
+      if (personalDetails.get('email')?.errors?.['required']) {
+        errors.push('Email is required');
+      } else if (personalDetails.get('email')?.errors?.['email']) {
+        errors.push('Please enter a valid email address');
       }
-      
-      alert(errorMessage);
+      if (personalDetails.get('phone')?.errors?.['required']) {
+        errors.push('Phone number is required');
+      } else if (personalDetails.get('phone')?.errors?.['pattern']) {
+        errors.push('Please enter a valid 10-digit phone number');
+      }
     }
+
+    // Check education
+    const educationArray = this.resumeForm.get('education') as FormArray;
+    if (educationArray.length === 0) {
+      errors.push('At least one education entry is required');
+    } else {
+      educationArray.controls.forEach((control, index) => {
+        if (control.invalid) {
+          if (control.get('degree')?.errors?.['required']) {
+            errors.push(`Education #${index + 1}: Degree is required`);
+          }
+          if (control.get('institution')?.errors?.['required']) {
+            errors.push(`Education #${index + 1}: Institution is required`);
+          }
+          if (control.get('year')?.errors?.['required']) {
+            errors.push(`Education #${index + 1}: Year is required`);
+          }
+        }
+      });
+    }
+
+    // Check social links
+    const socialLinksArray = personalDetails?.get('socialLinks') as FormArray;
+    if (socialLinksArray.length === 0) {
+      errors.push('At least one social link is required');
+    } else {
+      socialLinksArray.controls.forEach((control, index) => {
+        if (control.invalid) {
+          if (control.get('platform')?.errors?.['required']) {
+            errors.push(`Social Link #${index + 1}: Platform is required`);
+          }
+          if (control.get('url')?.errors?.['required']) {
+            errors.push(`Social Link #${index + 1}: URL is required`);
+          }
+        }
+      });
+    }
+
+    if (errors.length > 0) {
+      // Show all validation errors
+      const errorMessage = 'Please fix the following errors:\n' + errors.join('\n');
+      alert(errorMessage);
+      console.error('Form validation errors:', errors);
+      return;
+    }
+
+    // If no errors, show save modal
+    this.showSaveModal = true;
   }
 
   // Helper method to mark all controls as touched
@@ -707,10 +750,9 @@ export class ResumeEditorComponent implements OnInit {
     }
   }
 
-  async openEmailCompose() {
-    if (!this.previewContainer) return;
-
-    // Generate PDF
+  // Add this private method for PDF generation
+  private async generateResumePdfAttachment(): Promise<{ name: string, data: string, type: string }> {
+    if (!this.previewContainer) throw new Error('No preview container');
     const element = this.previewContainer.nativeElement;
     const clone = element.cloneNode(true) as HTMLElement;
     clone.style.position = 'absolute';
@@ -723,220 +765,129 @@ export class ResumeEditorComponent implements OnInit {
     clone.id = 'resume-preview-clone';
     document.body.appendChild(clone);
 
-    try {
-      // Prepare content
-      const links = clone.getElementsByTagName('a');
-      Array.from(links).forEach(link => {
-        link.style.color = '#0000FF';
-        link.style.textDecoration = 'underline';
-      });
+    // Prepare content
+    const links = clone.getElementsByTagName('a');
+    Array.from(links).forEach(link => {
+      link.style.color = '#0000FF';
+      link.style.textDecoration = 'underline';
+    });
 
-      // Apply font styles for better rendering
-      const style = document.createElement('style');
-      style.textContent = `
-        #resume-preview-clone {
-          font-family: Arial, sans-serif !important;
-          color: black !important;
+    // Apply font styles for better rendering
+    const style = document.createElement('style');
+    style.textContent = `
+      #resume-preview-clone {
+        font-family: Arial, sans-serif !important;
+        color: black !important;
+      }
+      #resume-preview-clone * {
+        font-family: inherit !important;
+      }
+    `;
+    clone.appendChild(style);
+
+    // Convert to canvas with optimal settings
+    const canvas = await html2canvas(clone, {
+      // @ts-ignore: scale is a valid html2canvas option
+      scale: 3,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#FFFFFF',
+      logging: false,
+      imageTimeout: 0,
+      onclone: (clonedDoc: Document) => {
+        const clonedElement = clonedDoc.getElementById('resume-preview-clone');
+        if (clonedElement) {
+          clonedElement.style.transform = 'none';
+          clonedElement.style.zoom = '1';
         }
-        #resume-preview-clone * {
-          font-family: inherit !important;
-        }
-      `;
-      clone.appendChild(style);
+      }
+    });
 
-      // Convert to canvas with optimal settings
-      const canvas = await html2canvas(clone, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#FFFFFF',
-        logging: false,
-        imageTimeout: 0,
-        onclone: (clonedDoc) => {
-          const clonedElement = clonedDoc.getElementById('resume-preview-clone');
-          if (clonedElement) {
-            clonedElement.style.transform = 'none';
-            clonedElement.style.zoom = '1';
-          }
-        }
-      });
+    const pageWidth = 210;
+    const contentHeight = clone.scrollHeight;
+    const contentWidth = clone.scrollWidth;
+    const scaleFactor = pageWidth / contentWidth;
+    const pdfHeight = contentHeight * scaleFactor;
 
-      // Calculate dimensions for single-page dynamic height PDF
-      const pageWidth = 210; // A4 width in mm
-      const contentHeight = clone.scrollHeight;
-      const contentWidth = clone.scrollWidth;
-      const scaleFactor = pageWidth / contentWidth;
-      const pdfHeight = contentHeight * scaleFactor;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [pageWidth, pdfHeight]
+    });
 
-      // Create PDF with dynamic height as single page
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [pageWidth, pdfHeight]
-        // Using default compression = true
-      });
+    const imgData = canvas.toDataURL('image/jpeg', 0.8);
+    pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight, undefined, 'FAST');
 
-      // Convert canvas to image data with high quality
-      const imgData = canvas.toDataURL('image/jpeg', 0.8);
-      console.log('Canvas dimensions:', { width: canvas.width, height: canvas.height });
-      console.log('Image data size:', (imgData.length * 0.75) / (1024 * 1024), 'MB');
-      
-      // Add image to fill the entire dynamic height page
-      pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight, undefined, 'FAST');
+    // Add clickable links
+    Array.from(links).forEach(link => {
+      const rect = link.getBoundingClientRect();
+      const containerRect = clone.getBoundingClientRect();
+      const x = (rect.left - containerRect.left) * (210 / containerRect.width);
+      const y = (rect.top - containerRect.top) * (297 / containerRect.height);
+      const width = rect.width * (210 / containerRect.width);
+      const height = rect.height * (297 / containerRect.height);
+      pdf.link(x, y, width, height, { url: link.href });
+    });
 
-      // Add clickable links
-      Array.from(links).forEach(link => {
-        const rect = link.getBoundingClientRect();
-        const containerRect = clone.getBoundingClientRect();
-        
-        const x = (rect.left - containerRect.left) * (210 / containerRect.width);
-        const y = (rect.top - containerRect.top) * (297 / containerRect.height);
-        const width = rect.width * (210 / containerRect.width);
-        const height = rect.height * (297 / containerRect.height);
-
-        pdf.link(x, y, width, height, { url: link.href });
-      });
-
-      // Get PDF as data URI string
-      const pdfDataUri = pdf.output('datauristring');
-      console.log('PDF data URI size:', (pdfDataUri.length * 0.75) / (1024 * 1024), 'MB');
-      const name = this.resumeForm.get('personalDetails.name')?.value || 'Resume';
-      const fileName = `${name}.pdf`;
-
-      // Open email compose with PDF attachment as data URI
-      const dialogRef = this.dialog.open(EmailComposeComponent, {
-        width: '600px',
-        maxHeight: '80vh',
-        data: {
-          attachments: [{
-            name: fileName,
-            data: pdfDataUri,
-            type: 'application/pdf'
-          }]
-        }
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          console.log('Email sent with attachment:', result);
-        }
-      });
-    } finally {
-      document.body.removeChild(clone);
-    }
+    // Get PDF as data URI string
+    const pdfDataUri = pdf.output('datauristring');
+    document.body.removeChild(clone);
+    const name = this.resumeForm.get('personalDetails.name')?.value || 'Resume';
+    const fileName = `${name}.pdf`;
+    return {
+      name: fileName,
+      data: pdfDataUri,
+      type: 'application/pdf'
+    };
   }
 
-  // Save as PDF using jsPDF and html2canvas
+  async openEmailCompose() {
+    if (!this.previewContainer) return;
+    const pdfAttachment = await this.generateResumePdfAttachment();
+    const dialogRef = this.dialog.open(EmailComposeComponent, {
+      width: '600px',
+      maxHeight: '80vh',
+      data: {
+        attachments: [pdfAttachment]
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Email sent with attachment:', result);
+      }
+    });
+  }
+
   async saveAsPdf(): Promise<void> {
     if (!this.previewContainer || this.isGeneratingPdf) {
       return;
     }
     this.isGeneratingPdf = true;
-
     // Create a loading indicator
     const loadingIndicator = document.createElement('div');
     loadingIndicator.className = 'pdf-loading-indicator';
     loadingIndicator.innerHTML = '<div class="spinner"></div><p>Generating PDF...</p>';
     document.body.appendChild(loadingIndicator);
-
     try {
-      const element = this.previewContainer.nativeElement;
-
-      // Clone the element and prepare it for PDF
-      const clone = element.cloneNode(true) as HTMLElement;
-      clone.style.position = 'absolute';
-      clone.style.left = '-9999px';
-      clone.style.top = '0';
-      clone.style.width = '210mm';
-      clone.style.padding = '10mm';
-      clone.style.backgroundColor = '#FFFFFF';
-      clone.style.color = '#000000';
-      clone.style.fontSize = '14px';
-      clone.style.lineHeight = '1.4';
-      document.body.appendChild(clone);
-
-      // Apply styles to ensure crisp text
-      const allText = clone.getElementsByTagName('*');
-      for (let i = 0; i < allText.length; i++) {
-        const el = allText[i] as HTMLElement;
-        el.style.color = '#000000';
-        if (el.classList.contains('section-heading')) {
-          el.style.color = '#000000';
-          el.style.borderBottom = '1px solid #000000';
-        }
+      const pdfAttachment = await this.generateResumePdfAttachment();
+      // Convert data URI to Blob for download
+      const byteString = atob(pdfAttachment.data.split(',')[1]);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
       }
-
-      // Let the clone render and get its height
-      await new Promise(resolve => setTimeout(resolve, 100));
-      const contentHeight = clone.scrollHeight;
-
-      // Calculate PDF dimensions
-      const pdfWidth = 210; // A4 width in mm
-      const contentWidthMM = pdfWidth - 20; // 10mm padding on each side
-      const scaleFactor = contentWidthMM / (clone.offsetWidth - 20); // Account for padding
-      const pdfHeight = (contentHeight * scaleFactor) + 20; // Add padding
-
-      // Create PDF with custom height
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [pdfWidth, pdfHeight]
-      });
-
-      // Capture the content
-      const canvas = await html2canvas(clone, {
-        scale: 3, // Reduced scale for smaller file size while maintaining quality
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#FFFFFF',
-        width: clone.offsetWidth,
-        height: contentHeight,
-        windowWidth: clone.offsetWidth,
-        windowHeight: contentHeight,
-        logging: false,
-        imageTimeout: 0,
-        removeContainer: true
-      });
-
-      // Add image to PDF with compression
-      const imageData = canvas.toDataURL('image/jpeg', 0.8); // Reduced quality for smaller size
-      pdf.addImage(
-        imageData,
-        'JPEG',
-        0,
-        0,
-        pdfWidth,
-        pdfHeight,
-        '',
-        'FAST'
-      );
-
-      // Add clickable links
-      const links = clone.querySelectorAll('a');
-      links.forEach((link: HTMLAnchorElement) => {
-        const rect = link.getBoundingClientRect();
-        const cloneRect = clone.getBoundingClientRect();
-        
-        // Calculate position in PDF coordinates
-        const x = (rect.left - cloneRect.left) * (pdfWidth / cloneRect.width);
-        const y = (rect.top - cloneRect.top) * (pdfHeight / cloneRect.height);
-        const width = rect.width * (pdfWidth / cloneRect.width);
-        const height = rect.height * (pdfHeight / cloneRect.height);
-
-        pdf.link(x, y, width, height, { url: link.href });
-      });
-
-      // Save PDF
-      pdf.save('resume.pdf');
-
-      // Clean up
-      document.body.removeChild(clone);
-      document.body.removeChild(loadingIndicator);
-      this.isGeneratingPdf = false;
+      const blob = new Blob([ab], { type: 'application/pdf' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = pdfAttachment.name;
+      link.click();
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to generate PDF. Please try again.');
-      document.body.removeChild(loadingIndicator);
+    } finally {
+      const loading = document.querySelector('.pdf-loading-indicator');
+      if (loading) document.body.removeChild(loading);
       this.isGeneratingPdf = false;
     }
   }

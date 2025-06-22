@@ -11,9 +11,9 @@
         </div>
       </div>
       <div class="contact-info">
-        <p><i class="fa-solid fa-envelope"></i> {{resumeData?.personalDetails?.email}}</p>
-        <p><i class="fa-solid fa-phone"></i> {{resumeData?.personalDetails?.phone}}</p>
-        <p><i class="fa-solid fa-location-dot"></i> 
+        <p><img src="assets/icons/envelope.svg" alt="Email" style="width:16px;height:16px;vertical-align:middle;"> {{resumeData?.personalDetails?.email}}</p>
+        <p><img src="assets/icons/phone.svg" alt="Phone" style="width:16px;height:16px;vertical-align:middle;"> {{resumeData?.personalDetails?.phone}}</p>
+        <p><img src="assets/icons/location.svg" alt="Location" style="width:16px;height:16px;vertical-align:middle;"> 
           {{resumeData?.address?.city}}, {{resumeData?.address?.state}}, {{resumeData?.address?.country}}
         </p>
       </div>
@@ -21,7 +21,7 @@
       <div class="social-links">
         <ng-container *ngFor="let link of resumeData?.personalDetails?.socialLinks">
           <a [href]="link.url" target="_blank" class="social-link">
-            <i [class]="getSocialIcon(link.platform)"></i>
+            <img [src]="getSocialIconSvg(link.platform)" [alt]="link.platform" style="width:16px;height:16px;vertical-align:middle;">
             {{link.url}}
           </a>
         </ng-container>

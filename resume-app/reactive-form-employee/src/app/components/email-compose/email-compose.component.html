@@ -2,102 +2,68 @@
   <!-- Header -->
   <div class="compose-header">
     <span class="header-text">Send Resume via Email</span>
-    <button mat-icon-button (click)="onCancel()" class="close-button">
-      <mat-icon>close</mat-icon>
-    </button>
+    <button (click)="onCancel()" class="close-button">X</button>
   </div>
 
   <!-- Email Form -->
   <div class="compose-body">
-    <!-- Sheet Selection -->
-    <mat-form-field appearance="outline" class="sheet-field" *ngIf="sheets.length > 0">
-      <mat-label>Select Email Sheet</mat-label>
-      <mat-select [(ngModel)]="selectedSheetId" (selectionChange)="onSheetSelect($event)">
-        <mat-option *ngFor="let sheet of sheets" [value]="sheet.id">
-          {{ sheet.name }} ({{ sheet.emails.length }} emails)
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="recipient-field">
-      <mat-label>To</mat-label>
-      <mat-chip-grid #chipList>
-        <mat-chip-row
-          *ngFor="let email of emailList"
-          (removed)="remove(email)">
-          {{email}}
-          <button matChipRemove>
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </mat-chip-row>
-      </mat-chip-grid>
-      <input
-        placeholder="Add email..."
-        [matChipInputFor]="chipList"
-        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-        [matChipInputAddOnBlur]="true"
-        (matChipInputTokenEnd)="add($event)"
-        #emailInput>
-      <mat-icon matSuffix>mail</mat-icon>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="subject-field">
-      <mat-label>Subject</mat-label>
-      <input matInput [(ngModel)]="emailData.subject">
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="message-field">
-      <textarea matInput [(ngModel)]="emailData.message" rows="12" placeholder="Write your message here..."></textarea>
-    </mat-form-field>
-
-    <!-- Loading Spinner -->
-    <div *ngIf="isSending" class="loading-spinner">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p class="spinner-text">Sending emails...</p>
+    <!-- Email List Dropdown -->
+    <div class="form-group">
+      <label for="sheetSelect">Select Email List</label>
+      <select id="sheetSelect" [(ngModel)]="selectedSheetId" (change)="onNativeSheetChange($event)">
+        <option value="">-- Select --</option>
+        <option *ngFor="let sheet of sheets" [value]="sheet._id">{{sheet.name}}</option>
+      </select>
+      <div class="hint">Select a list to add all emails at once</div>
     </div>
 
-    <!-- Attachments -->
-    <div class="attachments-section" *ngIf="emailData.attachments.length > 0">
-      <div class="attachments-header">
-        <mat-icon>attach_file</mat-icon>
-        <span>Attachments</span>
+    <!-- To (chips) -->`
+    <div class="form-group">
+      <label>To</label>
+      <div class="chips">
+        <span *ngFor="let email of emailList" class="chip">
+          {{email}}
+          <button type="button" (click)="remove(email)">x</button>
+        </span>
+        <input
+          placeholder="Add email"
+          [(ngModel)]="newEmail"
+          (keydown.enter)="addEmail()"
+          (blur)="addEmail()"
+          type="text"
+        />
       </div>
-      <div class="attachments-list">
-        <div class="attachment-item" *ngFor="let file of emailData.attachments; let i = index">
-          <span class="file-name" (click)="previewAttachment(file)" style="cursor: pointer;">
-            <mat-icon>description</mat-icon>
-            {{file.name}}
-          </span>
-          <div class="attachment-actions">
-            <button mat-icon-button (click)="previewAttachment(file)" class="preview-button" matTooltip="Preview">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button mat-icon-button (click)="removeAttachment(i)" class="remove-button" matTooltip="Remove">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
+      <div class="hint">You can add more emails manually or select another list</div>
+    </div>
+
+    <!-- Subject -->
+    <div class="form-group">
+      <label>Subject</label>
+      <input type="text" [(ngModel)]="emailData.subject" />
+    </div>
+
+    <!-- Message -->
+    <div class="form-group">
+      <label>Message</label>
+      <textarea [(ngModel)]="emailData.message" rows="8"></textarea>
+    </div>
+
+    <!-- Attachments (PDF only) -->
+    <div class="form-group">
+      <label>Attach PDF</label>
+      <input type="file" (change)="handleFiles($event)" accept="application/pdf" multiple />
+      <div *ngIf="emailData.attachments.length > 0">
+        <div *ngFor="let file of emailData.attachments; let i = index">
+          {{file.name}}
+          <button type="button" (click)="removeAttachment(i)">Remove</button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Footer -->
-  <div class="compose-footer">
-    <div class="footer-actions">
-      <div class="left-actions">
-        <button mat-raised-button color="primary" (click)="onSend()" class="send-button">
-          <mat-icon>send</mat-icon>
-          Send
-        </button>
-        <input type="file" #fileInput style="display: none" (change)="handleFiles($event)" multiple>
-        <button mat-stroked-button (click)="fileInput.click()" class="attach-button">
-          <mat-icon>attach_file</mat-icon>
-          Attach
-        </button>
-      </div>
-      <button mat-button (click)="onCancel()" class="discard-button">
-        Discard
-      </button>
+    <!-- Actions -->
+    <div class="form-group buttons-group">
+      <button (click)="onSend()">Send</button>
+      <button (click)="onCancel()">Discard</button>
     </div>
   </div>
 </div>

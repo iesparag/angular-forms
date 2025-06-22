@@ -37,4 +37,26 @@ export class ModernTemplateComponent {
     // Return the mapped icon or a default link icon
     return iconMap[platformLower] || 'fas fa-link';
   }
+
+  getSocialIconSvg(platform: string): string {
+    const map: { [key: string]: string } = {
+      github: 'assets/icons/github.svg',
+      linkedin: 'assets/icons/linkedin.svg',
+      twitter: 'assets/icons/link.svg',
+      facebook: 'assets/icons/link.svg',
+      instagram: 'assets/icons/link.svg',
+      portfolio: 'assets/icons/link.svg',
+      website: 'assets/icons/link.svg',
+      blog: 'assets/icons/link.svg',
+      medium: 'assets/icons/link.svg',
+      stackoverflow: 'assets/icons/link.svg',
+      'dev.to': 'assets/icons/link.svg',
+      gitlab: 'assets/icons/link.svg',
+      bitbucket: 'assets/icons/link.svg',
+      youtube: 'assets/icons/link.svg',
+      behance: 'assets/icons/link.svg',
+      dribbble: 'assets/icons/link.svg'
+    };
+    return map[platform.toLowerCase()] || 'assets/icons/link.svg';
+  }
 }

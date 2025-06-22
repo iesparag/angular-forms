@@ -36,7 +36,7 @@ import { Sheet } from '../../models/sheet.model';
     MatProgressSpinnerModule
   ],
   templateUrl: './sheet-manager.component.html',
-  styleUrls: ['./sheet-manager.component.scss']
+  styleUrls: ['./sheet-manager.component.css']
 })
 export class SheetManagerComponent implements OnInit {
   sheets: Sheet[] = [];
@@ -135,7 +135,7 @@ export class SheetManagerComponent implements OnInit {
   }
 
   editSheet(sheet: Sheet): void {
-    this.currentSheetId = sheet.id;
+    this.currentSheetId = sheet._id;
     this.editMode = true;
     this.sheetForm.patchValue({
       name: sheet.name,

@@ -25,6 +25,7 @@ export const sendEmail = async (req, res) => {
 
         // Process file attachments from multer
         const attachments = [];
+        console.log(req.files,"req.files bjfesfsji");
         let totalSize = 0;
         if (req.files && req.files.length > 0) {
             for (const file of req.files) {

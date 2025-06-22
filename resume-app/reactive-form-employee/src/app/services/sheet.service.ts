@@ -70,7 +70,7 @@ export class SheetService {
 
     return this.http.put<Sheet>(`${this.apiUrl}/${id}`, updatedSheet).pipe(
       tap(sheet => {
-        const index = this.sheets.findIndex(s => s.id === id);
+        const index = this.sheets.findIndex(s => s._id === id);
         if (index !== -1) {
           this.sheets[index] = sheet;
           this.sheetsSubject.next([...this.sheets]);
@@ -86,7 +86,7 @@ export class SheetService {
   deleteSheet(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       tap(() => {
-        const index = this.sheets.findIndex(sheet => sheet.id === id);
+        const index = this.sheets.findIndex(sheet => sheet._id === id);
         if (index !== -1) {
           this.sheets.splice(index, 1);
           this.sheetsSubject.next([...this.sheets]);

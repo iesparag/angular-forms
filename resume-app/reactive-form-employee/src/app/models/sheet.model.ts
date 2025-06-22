@@ -1,5 +1,5 @@
 export interface Sheet {
-  id: string;
+  _id: string;
   name: string;
   emails: string[];
   createdAt: Date;

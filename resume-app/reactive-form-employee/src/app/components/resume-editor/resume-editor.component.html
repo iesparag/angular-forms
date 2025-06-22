@@ -121,12 +121,16 @@
               <h2>Personal Details</h2>
             </div>
             <div class="form-field">
-              <label>Name:</label>
+              <label>Name: <span class="required">*</span></label>
               <input 
                 type="text" 
                 formControlName="name" 
                 placeholder="Your full name"
+                [class.invalid]="resumeForm.get('personalDetails.name')?.invalid && resumeForm.get('personalDetails.name')?.touched"
                 (input)="updateResumeData()" />
+              <div *ngIf="resumeForm.get('personalDetails.name')?.invalid && resumeForm.get('personalDetails.name')?.touched" class="error-message">
+                Name is required
+              </div>
             </div>
             
             <div class="form-field">
@@ -153,20 +157,30 @@
               </div>
             </div>
             <div class="form-field">
-              <label>Email:</label>
+              <label>Email: <span class="required">*</span></label>
               <input 
                 type="email" 
                 formControlName="email" 
                 placeholder="Your email address"
+                [class.invalid]="resumeForm.get('personalDetails.email')?.invalid && resumeForm.get('personalDetails.email')?.touched"
                 (input)="updateResumeData()" />
+              <div *ngIf="resumeForm.get('personalDetails.email')?.invalid && resumeForm.get('personalDetails.email')?.touched" class="error-message">
+                <span *ngIf="resumeForm.get('personalDetails.email')?.errors?.['required']">Email is required</span>
+                <span *ngIf="resumeForm.get('personalDetails.email')?.errors?.['email']">Please enter a valid email address</span>
+              </div>
             </div>
             <div class="form-field">
-              <label>Phone:</label>
+              <label>Phone: <span class="required">*</span></label>
               <input 
-                type="text" 
+                type="tel" 
                 formControlName="phone" 
                 placeholder="Your phone number"
+                [class.invalid]="resumeForm.get('personalDetails.phone')?.invalid && resumeForm.get('personalDetails.phone')?.touched"
                 (input)="updateResumeData()" />
+              <div *ngIf="resumeForm.get('personalDetails.phone')?.invalid && resumeForm.get('personalDetails.phone')?.touched" class="error-message">
+                <span *ngIf="resumeForm.get('personalDetails.phone')?.errors?.['required']">Phone number is required</span>
+                <span *ngIf="resumeForm.get('personalDetails.phone')?.errors?.['pattern']">Please enter a valid 10-digit phone number</span>
+              </div>
             </div>
 
             <!-- Social Links -->
@@ -183,20 +197,28 @@
                   class="social-link-item">
                   <div class="social-link-content">
                     <div class="form-field">
-                      <label>Platform:</label>
+                      <label>Platform: <span class="required">*</span></label>
                       <input 
                         type="text" 
                         formControlName="platform" 
                         placeholder="e.g. GitHub, LinkedIn"
+                        [class.invalid]="socialLinksArray.at(i).get('platform')?.invalid && socialLinksArray.at(i).get('platform')?.touched"
                         (input)="updateResumeData()" />
+                      <div *ngIf="socialLinksArray.at(i).get('platform')?.invalid && socialLinksArray.at(i).get('platform')?.touched" class="error-message">
+                        Platform is required
+                      </div>
                     </div>
                     <div class="form-field">
-                      <label>URL:</label>
+                      <label>URL: <span class="required">*</span></label>
                       <input 
                         type="url" 
                         formControlName="url" 
                         placeholder="https://..."
+                        [class.invalid]="socialLinksArray.at(i).get('url')?.invalid && socialLinksArray.at(i).get('url')?.touched"
                         (input)="updateResumeData()" />
+                      <div *ngIf="socialLinksArray.at(i).get('url')?.invalid && socialLinksArray.at(i).get('url')?.touched" class="error-message">
+                        URL is required
+                      </div>
                     </div>
                     <button type="button" (click)="removeSocialLink(i)" class="remove-btn">×</button>
                   </div>
@@ -296,25 +318,37 @@
                 <button type="button" (click)="addEducation()">+ Add Education</button>
               </div> 
                   <div class="form-field">
-                    <label>Degree:</label>
+                    <label>Degree: <span class="required">*</span></label>
                     <input 
                       type="text" 
                       formControlName="degree"
+                      [class.invalid]="educationArray.at(i).get('degree')?.invalid && educationArray.at(i).get('degree')?.touched"
                       (input)="updateResumeData()" />
+                    <div *ngIf="educationArray.at(i).get('degree')?.invalid && educationArray.at(i).get('degree')?.touched" class="error-message">
+                      Degree is required
+                    </div>
                   </div>
                   <div class="form-field">
-                    <label>Institution:</label>
+                    <label>Institution: <span class="required">*</span></label>
                     <input 
                       type="text" 
                       formControlName="institution"
+                      [class.invalid]="educationArray.at(i).get('institution')?.invalid && educationArray.at(i).get('institution')?.touched"
                       (input)="updateResumeData()" />
+                    <div *ngIf="educationArray.at(i).get('institution')?.invalid && educationArray.at(i).get('institution')?.touched" class="error-message">
+                      Institution is required
+                    </div>
                   </div>
                   <div class="form-field">
-                    <label>Year:</label>
+                    <label>Year: <span class="required">*</span></label>
                     <input 
                       type="text" 
                       formControlName="year"
+                      [class.invalid]="educationArray.at(i).get('year')?.invalid && educationArray.at(i).get('year')?.touched"
                       (input)="updateResumeData()" />
+                    <div *ngIf="educationArray.at(i).get('year')?.invalid && educationArray.at(i).get('year')?.touched" class="error-message">
+                      Year is required
+                    </div>
                   </div>
                   <div class="form-field">
                     <label>Description:</label>
@@ -580,3 +614,50 @@
     </div>
   </div>
 </div>
+
+<style>
+.required {
+  color: red;
+  margin-left: 4px;
+}
+
+.invalid {
+  border-color: red !important;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.form-field {
+  margin-bottom: 1rem;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.form-field input.invalid,
+.form-field textarea.invalid {
+  border-color: red;
+}
+</style>
